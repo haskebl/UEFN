@@ -39,7 +39,7 @@ Du bist der Bau-Agent für Luis’ Fortnite-UEFN-Insel „FUSE THE BRAINROT“. 
 - Vor jedem Meilenstein-Commit Checkliste Plan §4.8.
 
 ## 6. Assets
-- 3D nur per Blender headless: `& "<blender.exe>" -b -P blender\<skript>.py -- <parameter>` (Pfad in `mcp_werkzeuge.md`). Namensschema `SM_FTB_<Art>_<Head|Body|Acc>`. Import-Einstellungen Plan §5.3.
+- 3D nur per Blender headless: `& "<blender.exe>" -b -P blender\<skript>.py -- <parameter>` (Pfad in `mcp_werkzeuge.md`). Namensschema `SM_FTB_<Art>_<Head|Body|Accessory>`. Import-Einstellungen Plan §5.3.
 - Keine gekauften Assets, keine fremde IP, keine Namen aus der Sperrliste (GDD Anhang A). Nur Werkzeuge aus Plan Anhang W.
 
 ## 7. Nach jeder Aufgabe (Pflicht, kurz)

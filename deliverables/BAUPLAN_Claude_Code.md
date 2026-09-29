@@ -112,7 +112,7 @@ Claude Code prüft **jede Zeile** am Ende jedes Meilensteins und trägt Messwert
 | # | Budget | Grün (Ziel) | Gelb (Fallback planen) | Rot (harte Grenze) | Messmethode |
 |---|---|---|---|---|---|
 | B1 | Speicher gesamt (Launch Memory Calculation) | ≤ 45.000 | 45.001–70.000 | > 70.000 (Projektion) | *Project → Launch Memory Calculation*; Top-100 unter *Window → Message Log → Memory Test Results* (VERIFIED). MCP-Aufruf UNVERIFIED, Fallback Luis-Klick |
-| B2 | Dreiecke LOD0: Kopf / Körper / Accessoire | ≤ 1.500 / 2.500 / 800 | +10 % | +20 % | `blender/out/report.json` (Skript) + Static-Mesh-Editor |
+| B2 | Dreiecke LOD0: Kopf / Körper / Accessoire | ≤ 1.500 / 2.500 / 800 | +10 % | +20 % | `blender/out/parts_layout.json` (Skript) + Static-Mesh-Editor |
 | B3 | Dreiecke je Kreatur (3 Teile) | ≤ 4.800 | ≤ 5.300 | > 5.800 | Summe B2 |
 | B4 | Gegner / Mini-Boss / Server-Boss / Ei / Kapsel | ≤ 2.000 / (Gegner skaliert) / 25.000 / 600 / 300 | +10 % | +20 % | wie B2 |
 | B5 | LODs Kreatur-Teile | 3 Stufen (100 / 50 / 20 %), Screen Size 1,0 / 0,5 / 0,2 | – | fehlende LODs | Static-Mesh-Editor |
@@ -125,7 +125,7 @@ Claude Code prüft **jede Zeile** am Ende jedes Meilensteins und trägt Messwert
 | B12 | Gleichzeitige `MoveTo`-Lunges je Plot | ≤ 3 | – | > 3 | Verse-Assert |
 | B13 | Server-Frame-Zeit, Δp95 gegenüber leerer Insel (16B, Welle + Boss) | ≤ +8 ms | +8 bis +25 ms | > +25 ms **oder** > 3 Hänger > 300 ms pro Minute | Frame-Probe (M0-10) `[FTB][PERF] frame p50/p95/max` |
 | B14 | Verse-Kosten: Kreatur tauschen / Plot neu aufbauen / OnBegin | ≤ 2 ms / ≤ 15 ms / ≤ 5 s | ×2 | ×4 | `GetSimulationElapsedTime`-Deltas im Debug |
-| B15 | Verse-Schleifenraten | Einkommen 1 Hz (eine Schleife für alle Spieler) · Kampf 4 Hz **nur** auf Plots mit aktiver Welle · Boss 4 Hz · HUD-Updates ≤ 2 Hz je Spieler · Hype-Ring alle 3,0 s · Idle-Prüfung 0,1 Hz · Hype-Zone 2 Hz nur während Boss · Autosave ≤ 1 Schreibvorgang/5 s je Spieler | – | jede Schleife mit `Sleep(0.0)` außer Frame-Probe im Debug | Code-Review-Checkliste 4.8 |
+| B15 | Verse-Schleifenraten | Einkommen 1 Hz (eine Schleife für alle Spieler) · Kampf 4 Hz **nur** auf Plots mit aktiver Welle · Boss 4 Hz · Münz-Ticker im HUD ≤ 10 Hz nur für den eigenen Zähler (Referenz `ftb_ui.verse`), alle übrigen HUD-Felder ≤ 2 Hz (bei B13 gelb: Ticker auf 2 Hz) · Hype-Ring alle 3,0 s · Idle-Prüfung 0,1 Hz · Hype-Zone 2 Hz nur während Boss · Sammel-Save alle 30 s + Sofort-Saves bei Schlüsselereignissen (höchstens 1 Sofort-Save/5 s je Spieler) | – | jede Schleife mit `Sleep(0.0)` außer Frame-Probe im Debug | Code-Review-Checkliste 4.8 |
 | B16 | Save-Größe (Worst Case ×2) | `FitsInPlayerMap` = true, Schätzung ≤ 16 KB | ≤ 32 KB | FitsInPlayerMap false | Test AT-M5-5 |
 | B17 | Niagara | ≤ 24 Systeme, CPU-Sim, ≤ 64 Partikel je Burst, Lebensdauer ≤ 2 s (Reveal ≤ 4 s), ≤ 6 Dauer-Auren je Plot | – | GPU-Sim oder > 128 Partikel | Niagara-Editor |
 | B18 | Audio | SFX/Stimmen WAV mono 22,05 kHz ≤ 3 s; Musik WAV stereo 44,1 kHz ≤ 90 s; gesamt ≤ 40 MB WAV | ≤ 60 MB | > 60 MB | `tools/budget_check.py` |
@@ -147,7 +147,7 @@ Alle 11 Dateien liegen im selben Ordner und damit im selben Verse-Modul; sie bra
 | `ftb_save.verse` | Persistenz: eine Root-Klasse, eine weak_map, Migration, Commit-Politik | `ftb_save_root` (`class<final><persistable>`), `var FtbSaves:weak_map(player, ftb_save_root)`, `PackCreature`/`UnpackCreature`, Bit-Hilfen, `MigrateSave`, `LoadSave`, `CommitSave`, `BuildSave`, `ApplySave`, `TryCommitState` | – |
 | `ftb_economy.verse` | Einkommen, Kosten, Eier/Quoten/Pity, Level-Up, Totem, Pads, Freilassen, Rebirth-Regeln, Belohnungsformeln, `FormatBig` | `IncomePerSecondLive`, `IncomeTick`, `RollEggRarity`, `LevelUpCost`, `PadCost`, `TotemCost`, `CanRebirth`, `WaveRewardCoins`, `FormatBig` | `# BEGIN GEN econ` (Parametertabelle GDD 5.8) |
 | `ftb_fusion.verse` | Fusionsregeln, Vorschau, Resonanz + Pity, Geheim-Rezepte, Namens-Lookup, Fusions-Timer, Index-Buchung | `fusion_preview`, `PreviewFusion`, `StartFusion`, `CollectFusion`, `HybridName(H,B,A)`, `SecretRecipeFor` | `# BEGIN GEN names` (1.000 Namen, Silben-IDs), `# BEGIN GEN secret` |
-| `ftb_creature_pool.verse` | Welt-Darstellung: Kreaturen auf Pads, Gegner, Eier, Drops; Teil-Offsets; Material je Seltenheit; Lunges; Plot-Geometrie | `plot_geo` (Plot-Index → Welt-Transform), `creature_display` (Schnittstelle) mit Implementierung der M0-Siegervariante, `ShowCreature`, `HideCreature`, `Lunge`, `ShowEnemy`, `MoveEnemyAlongLane` | `# BEGIN GEN mounts` (Offsets aus `data/mounts.json`) |
+| `ftb_creature_pool.verse` | Welt-Darstellung: Kreaturen auf Pads, Gegner, Eier, Drops; Teil-Offsets; Material je Seltenheit; Lunges; Plot-Geometrie | `plot_geo` (Plot-Index → Welt-Transform), `creature_display` (Schnittstelle) mit Implementierung der M0-Siegervariante, `ShowCreature`, `HideCreature`, `Lunge`, `ShowEnemy`, `MoveEnemyAlongLane` | `# BEGIN GEN mounts` (Offsets aus `data/parts_layout.json`) |
 | `ftb_combat.verse` | Wellen je Plot (0,25-s-Sim), Gegner-Pool-Logik, Hype-Takt-Messung, Team-Wahl, Drops, Boss-Direktor (Server), Hype-Zone | `wave_director`, `hype_service`, `boss_director`, `WaveStrength(w)`, `BossHP` | – |
 | `ftb_ui.verse` | HUD und alle Panels (S0–S19), Toasts, Texte (`<localizes>`), Controller-Fokus-Reihenfolge | `player_ui` je Spieler, `ShowPanel`, `ShowToast`, `UpdateHud`, Text-Messages | – |
 | `ftb_shop_iit.verse` | IIT: Items/Angebote nach Epic-Vorlage, Kauf, Abgleich beim Join, Pending-Flag, Verbrauch „Münz-Rausch“ | Klassen **wörtlich aus Epic-Vorlage** (Namen UNVERIFIED bis M0-04), `shop_service.Reconcile(P)`, `OnPurchasesChanged` | Angebotsliste (14 Angebote GDD §9) |
@@ -155,7 +155,7 @@ Alle 11 Dateien liegen im selben Ordner und damit im selben Verse-Modul; sie bra
 | `ftb_events.verse` | Tagesbelohnung + Streak, Codes, Event-Wochen (Eier, Kreaturen, Modifikatoren, Aufgaben, Token-Umtausch), Rückkehr-Bonus, Analytics-Wrapper | `events_service`, `ClaimDaily`, `RedeemCode`, `ActiveModifiers`, `Track(P, EventId)` | `# BEGIN GEN events` (Kalender, Codes aus `data/events.csv`, `data/codes.csv`) |
 | `ftb_game_manager.verse` | **Einziges `creative_device`.** Startet alle Services, findet Devices, Spieler-Join/-Leave, Plot-Zuweisung, Teleports, Dösen, Debug-Harness (Autoplay, Bot-Plots, Frame-Probe) | `ftb_game_manager := class(creative_device)` mit `@editable`-Debug-Schaltern, `OnBegin`, `OnPlayerAdded`, `OnPlayerRemoved`, `RunAutoplay`, `FrameProbe` | – |
 
-**Generator:** `tools/gen_verse_tables.py` liest `data/brainrot_catalog.csv`, `data/hybrid_names.csv`, `data/econ_params.json` (aus GDD 5.8, einmalig in M1-01 angelegt), `data/events.csv`, `data/codes.csv`, `data/mounts.json` und ersetzt **nur** den Text zwischen `# BEGIN GEN <name>` und `# END GEN <name>`. Handgeschriebener Code außerhalb der Marker bleibt unberührt. Nie Hand-Edits innerhalb der Marker.
+**Generator:** `tools/gen_verse_tables.py` liest `data/brainrot_catalog.csv`, `data/hybrid_names.csv`, `data/econ_params.json` (aus GDD 5.8, einmalig in M1-01 angelegt), `data/events.csv`, `data/codes.csv`, `data/parts_layout.json` und ersetzt **nur** den Text zwischen `# BEGIN GEN <name>` und `# END GEN <name>`. Handgeschriebener Code außerhalb der Marker bleibt unberührt. Nie Hand-Edits innerhalb der Marker.
 
 ### 4.2 Datenmodell
 
@@ -174,7 +174,7 @@ Eine Root-Klasse `ftb_save_root := class<final><persistable>` in **einer** weak_
 | Evolution | Nach dem **ersten öffentlichen Publish** nur Felder **mit Literal-Default** ergänzen. Nie umbenennen, entfernen oder Typ ändern (VERIFIED). Defaults nie aus Modul-Konstanten (Linker-Fehler laut Forum, UNVERIFIED) |
 | Packen | Verse hat keine Bit-Operatoren (UNVERIFIED) → gemischte Basis per `Quotient[]`/`Mod[]` (Referenz) |
 | Größe | Rohdaten ≈ 1,3 KB, mit 3×-Overhead ≈ 4 KB; Budget B16: Worst-Case ×2 muss `FitsInPlayerMap` bestehen; Ziel ≤ 16 KB (≈ 12 % von ~128 KB, 128 KB UNVERIFIED) |
-| Commit-Politik | Sofort bei: Kauf (IIT), Fusion fertig, Rebirth, Code, Tagesbelohnung, Leave. Sonst Dirty-Flag + Sammel-Commit alle ≥ 5 s. `FitsInPlayerMap` nur beim Commit nach Wachstum (neue Kreatur, Index) – nicht pro Tick (Forum: langsam) |
+| Commit-Politik | Sofort bei: Kauf (IIT), Fusion fertig, Rebirth, Code, Tagesbelohnung, Leave. Sonst Dirty-Flag + Sammel-Commit im 30-s-Takt (Save-Schleife der Referenz `ftb_game_manager.verse`). `FitsInPlayerMap` nur beim Commit nach Wachstum (neue Kreatur, Index) – nicht pro Tick (Forum: langsam) |
 | Fehler | Laden schlägt fehl → frischer Save + `[FTB][ERROR][SAVE] load_failed` + Flag, **kein** Überschreiben, bis der Spieler eine Aktion macht (Schutz vor Leerschreiben bei temporären Fehlern) |
 | Private vs. öffentlich | Ob private Versionen getrennte Saves haben: UNVERIFIED → Test in M8-02. Fallback: Debug-Befehl „Save zurücksetzen“ nur bei `DebugMode` |
 
@@ -204,7 +204,11 @@ Eine Root-Klasse `ftb_save_root := class<final><persistable>` in **einer** weak_
 - Claude Code liest Logs **nur** über `python tools/log_check.py [--since <min>] [--test] [--perf] [--build]` (≤ 40 Zeilen Ausgabe, dedupliziert). Nie das volle Log in den Kontext laden.
 
 ### 4.7 Device-Referenzen
-**Plan-Entscheidung P-03:** Devices und Props werden per **Verse-Tag** gefunden (Tag-Klassen in `ftb_game_manager.verse`, z. B. `ftb_tag_btn_egg := class(tag){}`), die Plot-Zuordnung ergibt sich aus der Position (nächster Plot-Mittelpunkt). Tag-Such-API (`GetCreativeObjectsWithTag` bzw. Nachfolger `FindCreativeObjectsWithTag`): UNVERIFIED bis M0-04. **Fallback:** `@editable`-Arrays (16 Einträge je Device-Typ) im Game-Manager, die Claude Code per MCP befüllt (falls MCP Verse-Device-Properties setzen kann) oder Luis per Klickliste (≈ 20 min).
+**Plan-Entscheidung P-03 (Reihenfolge, Wahl in M0-16 nach MCP-Fähigkeit C3/C16):**
+1. **Referenz-Muster** `@editable Plots:[]ftb_plot` (verschachtelte Klasse je Plot mit Device-/Prop-Referenzen, siehe `docs/verse_reference/ftb_game_manager.verse` und `ftb_creature_pool.verse`) – nur wenn MCP verschachtelte `@editable`-Arrays befüllen kann (2.304 Prop-Referenzen per Hand sind ausgeschlossen).
+2. Sonst **Verse-Tags**: Devices und Props werden per Tag gefunden (Tag-Klassen in `ftb_game_manager.verse`, z. B. `ftb_tag_btn_egg := class(tag){}`), die Plot-Zuordnung ergibt sich aus der Position (nächster Plot-Mittelpunkt). Tag-Such-API (`GetCreativeObjectsWithTag` bzw. Nachfolger `FindCreativeObjectsWithTag`): UNVERIFIED bis M0-04.
+3. Sonst flache `@editable`-Arrays nur für Devices (16 Einträge je Typ, Luis-Klickliste ≈ 20 min) und für Kreatur-Teile Variante C (SpawnProp, keine platzierten Referenzen nötig).
+Teleports laufen immer über `TeleportTo` (das Feld `GateTeleporter` der Referenz entfällt).
 
 ### 4.8 Code-Review-Checkliste (vor jedem Meilenstein-Commit, 5 min)
 1. Keine `Sleep(0.0)`-Schleife außer `FrameProbe` (nur Debug). 2. Jede Schleife endet, wenn Spieler/Plot weg. 3. Keine Logs im Tick. 4. Kein Commit im Tick. 5. Alle Epic-APIs stehen in `api_digest.md`. 6. Generierte Bereiche unverändert seit Generator-Lauf (`python tools/gen_verse_tables.py --check`). 7. `DebugMode`-Code ist hinter `if (DebugMode?)`.
@@ -222,19 +226,19 @@ Eine Root-Klasse `ftb_save_root := class<final><persistable>` in **einer** weak_
 
 | Punkt | Festlegung |
 |---|---|
-| Einheiten | Blender Standard (Metrisch, Unit Scale 1,0, 1 BU = 1 m). FBX-Export mit „Apply Scalings = FBX Units Scale“ → **1 m Blender = 100 cm = 100 UE-Einheiten**. Kreaturgröße 1,8–2,4 m (GDD 11) |
-| Achsen | Modell schaut in Blender nach **−Y** (Front-Ansicht). FBX-Export Standard (Forward −Z, Up Y). Import in UEFN mit **Force Front X Axis = an** → Blick nach **+X** in UE. Prüfung: Bounding-Box/Blick per MCP; bei Fehler Gier-Korrektur als Konstante in `mounts.json` (`yaw_fix_deg`) statt Neuexport |
-| Pivot | **Körper:** Boden-Mitte (0,0,0 = Standpunkt). **Kopf/Accessoire:** am eigenen Montagepunkt (Kontaktfläche). Montagepunkte am Körper als Empties `MOUNT_Head`, `MOUNT_Back`, `MOUNT_Neck`, `MOUNT_Top` → Export nach `blender/out/mounts.json` (cm, UE-Achsen). Fehlt das im Skript: Claude Code ergänzt eine Funktion `export_mounts()` |
+| Einheiten | Wie in den Skripten: **1 BU = 1 cm** (`scale_length = 0.01`, Länge Zentimeter). FBX-Export `apply_unit_scale=True`, `apply_scale_options='FBX_SCALE_UNITS'`, `global_scale=1.0` → UEFN-Import mit Skalierung **1,0**. Kreatur laut Skript ≈ 1,6–2,1 m; GDD will 1,8–2,4 m → Verse skaliert die Teile im Pool einheitlich ×1,15 (Konstante in `ftb_creature_pool.verse`) |
+| Achsen | Modell schaut in Blender nach **−Y**, oben +Z. FBX-Export Standard (`axis_forward='-Z'`, `axis_up='Y'`), UEFN-Import mit „Convert Scene“. Soll-Blickrichtung in UE: **+X**. Nach dem ersten Import prüfen (M0-08); falls falsch: **nur** per `export_fbx.py --rotate-z 90\|-90\|180` neu exportieren (nie zusätzlich Pads drehen – `blender/README.md` Punkt 9) |
+| Pivot | **Körper:** unten Mitte (Pad-Oberfläche). **Kopf:** Hals-Unterseite. **Accessoire:** eigener Montagepunkt. Sockel-Empties `SOCKET_Head`, `SOCKET_Back`, `SOCKET_Neck` (Körper) und `SOCKET_HeadTop`, `SOCKET_Face` (Kopf). Verse nutzt **nicht** die UE-Sockel, sondern die Offset-Tabelle aus `blender/out/parts_layout.json` (Feld `sockets_verse_local_cm`) → Generator-Marker `mounts` |
 | Topologie | Parametrische Primitive, Bevel 5 cm, Subdivision 1, Decimate auf Budget B2; Normals: Auto Smooth 40° |
-| UV | Paletten-UVs: jede Fläche auf die Mitte einer Farbzelle von `T_FTB_Palette` (256×64 = 32×8 Zellen à 8×8 px). Zellen-Belegung aus `blender/materials_spec.md` |
-| Namen | `SM_FTB_<Art>_<Slot>` mit Slot ∈ `Head|Body|Acc` (z. B. `SM_FTB_Waffelino_Head`). Gegner `SM_FTB_Enemy_<Name>`, Bosse `SM_FTB_Boss_<Name>`, Sonstiges `SM_FTB_<Ding>`; Fallback-Mesh `SM_FTB_<Art>_Merged` (nur falls Fallback F4) |
-| LOD | **Primär:** UE-Reduktion im Static-Mesh-Editor (LOD-Anzahl 3; LOD1 50 % Tris, Screen Size 0,5; LOD2 20 %, Screen Size 0,2). Ob UEFN „Reduction Settings“ anbietet: UNVERIFIED → **Fallback:** `export_fbx.py` exportiert `_LOD1`/`_LOD2` per Decimate, Import als LODs |
-| Export | Eine FBX je Mesh nach `blender/out/fbx/<Name>.fbx`; Optionen: Selected Objects, Mesh only, Apply Modifiers, Smoothing = Face, Add Leaf Bones aus, keine Animation |
-| Bericht | Skript schreibt `blender/out/report.json` (Name, Tris je LOD, Bounding Box cm) – Grundlage für Budget B2–B4 |
+| UV | Paletten-UVs: jede Fläche in die innere Hälfte einer Farbzelle von `T_FTB_Palette` (256×64 = **16×4 Zellen à 16 px**) + Vertex-Farbe als Rückfall (`UseVertexColor`). Belegung: `gen_species_parts.py` / `blender/materials_spec.md` |
+| Namen | `SM_FTB_<Art>_<Slot>` mit Slot ∈ `Head\|Body\|Accessory` (wie `gen_species_parts.py`, z. B. `SM_FTB_Waffelino_Accessory`). Gegner `SM_FTB_Enemy_<Name>`, Bosse `SM_FTB_Boss_<Name>`, Sonstiges `SM_FTB_<Ding>`; Fallback-Mesh `SM_FTB_<Art>_Merged` (nur falls Fallback F4) |
+| LOD | **Primär:** UE-Reduktion im Static-Mesh-Editor (LOD-Anzahl 3; LOD1 50 % Tris, Screen Size 0,5; LOD2 20 %, Screen Size 0,2). Ob UEFN „Reduction Settings“ anbietet: UNVERIFIED → **Fallback:** `gen_species_parts.py --lods` erzeugt `_LOD1`/`_LOD2`-FBX, Import als LODs im Static-Mesh-Editor |
+| Export | `export_fbx.py`: eine FBX je Mesh nach `blender/out/fbx/<Name>.fbx` (Aufruf mit `--out blender/out/fbx`), Smoothing = Face, trianguliert, keine Leaf Bones, Empties = Sockel; schreibt `manifest.json` |
+| Bericht | `parts_layout.json` (Tris je Teil, Sockel) + `fbx/manifest.json` (Name, Tris, Bounds) – Grundlage für Budget B2–B4 (`tools/budget_check.py` liest beide) |
 
 ### 5.3 UEFN-Import-Einstellungen (FBX, Static Mesh)
 Ordner: `Content/FTB/Meshes/<Creatures|Enemies|Bosses|Props>/`. Einstellungen (UEFN nutzt je nach Version den Interchange-Importer; Namen UNVERIFIED – prüfe im Import-Dialog; Fallback: gleichwertige Option):
-- Skeletal Mesh: aus · Combine Meshes: an · **Force Front X Axis: an** · Convert Scene Unit: an · Uniform Scale 1,0
+- Skeletal Mesh: aus · Combine Meshes: an · **Convert Scene: an** · Force Front X Axis: aus (Blickrichtung wird nur über `--rotate-z` korrigiert, 5.2) · Convert Scene Unit: an · Uniform Scale 1,0 · Sockel importieren: an (schadet nicht)
 - Materialien importieren: **aus** („Do not create material“) · Texturen importieren: aus
 - Auto Generate Collision: **aus** (Teile ohne Kollision; Pads/Plot haben eigene) · Nanite: **aus** · Lightmap-UVs generieren: aus
 - Danach je Mesh: LOD-Einstellungen (5.2), Material-Slot 0 = passende MI.
@@ -242,9 +246,10 @@ Ordner: `Content/FTB/Meshes/<Creatures|Enemies|Bosses|Props>/`. Einstellungen (U
 - Import per MCP (Werkzeug laut `mcp_werkzeuge.md`); Fallback: UEFN-Python (`unreal.AssetImportTask`, nur mit Python-Beta-Zugang); Fallback 2: Luis zieht den Ordner `blender/out/fbx` in den Content Browser und bestätigt den Dialog mit den obigen Werten (Klickliste von CC).
 
 ### 5.4 Materialien (Details: `blender/materials_spec.md`)
-- **Master `M_FTB_Creature`** (Default Lit, Blend **Masked** für Kristall-Dither, Two Sided aus). Parameter: `Palette` (Tex), `RarityTint` (Vec), `Metallic`, `Roughness`, `FresnelColor`, `FresnelPower`, `EmissiveStrength`, `CrystalOpacity` (Dither-Maske), `CosmicTex` (T_FTB_Noise), `CosmicPan`, `BobAmpCm`, `BobFreqHz`, `SquashAmp`, `PhaseGridCm` = 500, `RainbowOn`.
-- **WPO-Idle:** `Z += sin(2π·BobFreqHz·Time + Phase)·BobAmpCm`, `Phase = frac(floor(ObjectPosition.xy / PhaseGridCm) · 0,37)·2π` → Kopf, Körper, Accessoire auf demselben Pad laufen synchron (GDD 11). Amplitude je Art als MI-Parameter nicht möglich (MI je Seltenheit!) → **Plan-Entscheidung P-04:** Bob-Amplitude einheitlich 6 cm/0,8 Hz; Art-typische Bewegung über Verse-Lunges und Reveal. Eigene WPO-Materialien in UEFN: UNVERIFIED → M0-14.
-- **7 Seltenheits-MIs** `MI_FTB_R0_Klassik` … `MI_FTB_R6_Kosmisch` (Werte GDD 4.2), **6 Event-MIs** `MI_FTB_Ev_Gruender|Frosti|Funki|Schleimi|Kosmi|Festi`, **1 IIT-MI** `MI_FTB_Sternen`.
+- **Maßgeblich ist `blender/materials_spec.md`** (Parameter, Instanzwerte, Textur-Importwerte); hier nur die Kurzfassung.
+- **Master `M_FTB_Creature`** (Default Lit, Opaque) + Kopie **`M_FTB_Creature_Crystal`** (Masked + Dither, nur Seltenheit 3), Two Sided aus. Parameter: `Palette` (Tex), `RarityTint` (Vec), `Metallic`, `Roughness`, `FresnelColor`, `FresnelPower`, `EmissiveStrength`, `CrystalOpacity` (Dither-Maske), `CosmicTex` (T_FTB_Noise), `CosmicPan`, `BobAmpCm`, `BobFreqHz`, `SquashAmp`, `PhaseGridCm` = 500, `RainbowOn`.
+- **WPO-Idle:** `Z += sin(2π·BobFreqHz·Time + Phase)·BobAmpCm`, `Phase = frac(floor(ObjectPosition.xy / PhaseGridCm) · 0,37)·2π` → Kopf, Körper, Accessoire auf demselben Pad laufen synchron (GDD 11). Amplitude je Art als MI-Parameter nicht möglich (MI je Seltenheit!) → **Plan-Entscheidung P-04:** Bob-Parameter hängen an der Seltenheits-MI (nicht an der Art): Standard 4 cm / 0,8 Hz laut `materials_spec.md`; art-typische Bewegung über Verse-Lunges/Hüpfer. Echte Art-Werte bräuchten 7 × 8 MIs – nur, falls B1 grün und Zeit übrig (nach Feature-Freeze nicht mehr). Eigene WPO-Materialien in UEFN: UNVERIFIED → M0-14.
+- **7 Seltenheits-MIs** `MI_FTB_Rarity_0` … `MI_FTB_Rarity_6` (Werte GDD 4.2), **6 Event-MIs** `MI_FTB_Event_Gruender|Frosti|Funki|Schleimi|Kosmi|Festi`, **1 IIT-MI** `MI_FTB_Sternen`.
 - `M_FTB_Enemy` (Grau-Violett `#6D6A86`, Glitch-Kanten emissiv `#9CFF3A`) + MIs `MI_FTB_Boss_<Variante>`; `M_FTB_Prop` (Palette, unlit-frei, für Eier/Nest/Maschinen); `M_FTB_VFX_Add` (Unlit, Additive, für Niagara).
 - **Laufzeit-Tausch** `SetMaterial` (Prop) bzw. Material am `mesh_component`: UNVERIFIED → M0-14. Fallback: Teile bleiben Klassik, Seltenheit per Niagara-Aura-Ring am Pad + Namensschild-Farbe (GDD 4.2).
 
@@ -262,8 +267,8 @@ Icons rendert `blender/gen_icons.py` (Claude Code schreibt es in M2-06, falls ni
 ### 5.6 Audio
 | Kategorie | Werkzeug (Lizenz) | Format | Pfad |
 |---|---|---|---|
-| 30 Namens-Silben (10 Arten × Präfix/Mitte/Suffix) | **Kokoro-82M** (Apache-2.0), italienische Stimmen (`if_sara`, `im_nicola`; Voicepack-Lizenz prüft Luis, LIKELY Apache-2.0) + **ffmpeg** (LGPL/GPL, nur Werkzeug) für Pitch +4…+9 HT, Chorus, −12 dBFS | WAV mono 22,05 kHz 16 bit | `audio_src/syl/` → `Content/FTB/Audio/Syllables/A_FTB_Syl_<Art>_<P|M|S>` |
-| UI-Sounds (8), Fanfaren (7), Stinger (8) | `tools/gen_sfx.py` (Python stdlib `wave` + Sinus/Rauschen; 100 % eigen). Ergänzend **jsfxr/sfxr** (MIT) oder **ChipTone** (SFB Games; kommerzielle Nutzung der Sounds erlaubt – LIKELY, Luis prüft Hinweis auf der Seite) | WAV mono 22,05 kHz | `Content/FTB/Audio/UI|Fanfare|Stinger/` |
+| 30 Namens-Silben (10 Arten × Präfix/Mitte/Suffix) | **Kokoro-82M** (Apache-2.0), italienische Stimmen (`if_sara`, `im_nicola`; Voicepack-Lizenz prüft Luis, LIKELY Apache-2.0) + **ffmpeg** (LGPL/GPL, nur Werkzeug) für Pitch +4…+9 HT, Chorus, −12 dBFS | WAV mono 22,05 kHz 16 bit | `audio_src/syl/` → `Content/FTB/Audio/Syllables/A_FTB_Syl_<Art>_<P\|M\|S>` |
+| UI-Sounds (8), Fanfaren (7), Stinger (8) | `tools/gen_sfx.py` (Python stdlib `wave` + Sinus/Rauschen; 100 % eigen). Ergänzend **jsfxr/sfxr** (MIT) oder **ChipTone** (SFB Games; kommerzielle Nutzung der Sounds erlaubt – LIKELY, Luis prüft Hinweis auf der Seite) | WAV mono 22,05 kHz | `Content/FTB/Audio/UI\|Fanfare\|Stinger/` |
 | Kreatur-Laute (8) | Luis’ Handy-Aufnahmen, ffmpeg Pitch | WAV mono 22,05 kHz | `Content/FTB/Audio/Vox/A_FTB_Vox_<Art>` |
 | Musik (4 Zustände) | **Primär UEFN-Musik-Assets/Patchwork** (Epic-Assets erlaubt; kein eigener Speicher). Optional **LMMS** (GPL-2.0, Werkzeug) mit **CC0**-Samples (freesound.org, Filter CC0) nur wenn B1 grün | WAV stereo 44,1 kHz, Loop | `Content/FTB/Audio/Music/` |
 | **Verboten** | Coqui XTTS-v2 (nicht kommerziell), Stimmklone, virale Brainrot-Audios/Chants | – | – |
@@ -297,12 +302,12 @@ FuseTheBrainrot/
 │  │                                 Launch_Plan_Phase_H.md, verse_reference/*.verse
 ├─ research/                      ← uefn_feasibility.md, red_team_review.md, eco/<datum>/*.json
 ├─ data/                          ← brainrot_catalog.csv, hybrid_names.csv, economy_sim.py,
-│                                    catalog_gen.py, econ_params.json, events.csv, codes.csv, mounts.json
+│                                    catalog_gen.py, econ_params.json, events.csv, codes.csv, parts_layout.json
 ├─ tools/                         ← gen_verse_tables.py, log_check.py, eco_pull.py, gen_sfx.py,
 │                                    tts_syllables.py, budget_check.py, backup.ps1, place_plots.py
 ├─ blender/                       ← gen_species_parts.py, export_fbx.py, materials_spec.md, README.md,
 │  │                                 gen_misc_meshes.py, gen_icons.py, gen_thumbs.py
-│  └─ out/                        ← (ignoriert) fbx/, icons/, report.json, mounts.json
+│  └─ out/                        ← (ignoriert) ftb_species_parts.blend, fbx/ (+ manifest.json), icons/, thumbs/, parts_layout.json, T_FTB_Palette.png
 ├─ art_src/                       ← PNG-Quellen (Palette, Noise, Icons) – LFS
 ├─ audio_src/                     ← WAV-Quellen (syl/, ui/, vox/, music/) – LFS
 ├─ logs/                          ← (ignoriert) manuelle Log-Auszüge
@@ -536,21 +541,21 @@ S1 eigene Musik weglassen (UEFN-Bibliothek) → S2 Bonus-Arten streichen (−6 M
 
 #### M0-07 · Blender-Rauchtest + alle 24 Teile + Palette (1,5 h) [CC]
 - **Abh.:** M0-01, M0-02
-- **Dateien:** `blender/gen_species_parts.py`, `blender/export_fbx.py` (vorhanden), `blender/out/*`, `art_src/T_FTB_Palette.png`, `art_src/T_FTB_Noise.png`, `data/mounts.json`
+- **Dateien:** `blender/gen_species_parts.py`, `blender/export_fbx.py` (vorhanden), `blender/out/*`, `art_src/T_FTB_Palette.png`, `art_src/T_FTB_Noise.png`, `data/parts_layout.json`
 - **Assets:** A01–A24 (Kreatur-Teile), A60 Palette, A61 Noise
 - **Schritte:**
   1. `blender/README.md` lesen (nur Parameter-Abschnitt).
-  2. `& "<blender.exe>" -b -P blender\gen_species_parts.py -- <Parameter laut README für alle 8 Arten>` dann `export_fbx.py` → `blender/out/fbx/`.
-  3. Fehlt `mounts.json`/`report.json`/Palette-PNG in der Ausgabe: Funktionen ergänzen (5.2) – max. 60 Zeilen.
-  4. Budget-Check: `python tools/budget_check.py --report blender/out/report.json` (Skript neu, prüft B2–B4, B6).
-- **Abnahme:** 24 FBX, `report.json` alle Teile im Budget B2, `mounts.json` mit 8 Körpern × 4 Montagepunkten.
+  2. `& "<blender.exe>" -b -P blender\gen_species_parts.py -- --out blender\out --lods` dann `& "<blender.exe>" -b blender\out\ftb_species_parts.blend -P blender\export_fbx.py -- --out blender\out\fbx`.
+  3. Validierungs-Checkliste `blender/README.md` Punkte 1, 2, 6, 7 abarbeiten (ohne die .blend zu öffnen).
+  4. Budget-Check: `python tools/budget_check.py --layout blender/out/parts_layout.json --manifest blender/out/fbx/manifest.json` (Skript neu, prüft B2–B4, B6).
+- **Abnahme:** 24 FBX + `manifest.json`, alle Teile im Budget B2, `parts_layout.json` mit Sockeln für 8 Arten, `T_FTB_Palette.png`.
 - **Test:** –
 - **API:** Blender headless VERIFIED (Standard-Blender). Fallback bei Skriptfehler in Fremdskript: Fehler + Stacktrace (≤ 20 Zeilen) lesen, minimal patchen, Patch in `entscheidungen.md` notieren.
 
 #### M0-08 · Import, Master-Material, 3 Spike-MIs (2 h) [CC]
 - **Abh.:** M0-03, M0-07
 - **Dateien:** Content `FTB/Meshes/Creatures/`, `FTB/Materials/`, `FTB/Textures/`
-- **Assets:** A01–A24, A60, A61, A70 `M_FTB_Creature`, A71 `MI_FTB_R0_Klassik`, A73 `MI_FTB_R2_Gold`, A74 `MI_FTB_R3_Kristall`
+- **Assets:** A01–A24, A60, A61, A70 `M_FTB_Creature`, A71 `MI_FTB_Rarity_0`, A73 `MI_FTB_Rarity_2`, A74 `MI_FTB_Rarity_3` (Parent `M_FTB_Creature_Crystal`)
 - **Schritte:**
   1. Import mit Einstellungen 5.3 (Batch-Werkzeug laut `mcp_werkzeuge.md`).
   2. Texturen importieren, Einstellungen 5.5.
@@ -593,7 +598,7 @@ S1 eigene Musik weglassen (UEFN-Bibliothek) → S2 Bonus-Arten streichen (−6 M
 #### M0-11 · Variante A: Pool-Props (2 h) [CC]
 - **Abh.:** M0-08, M0-09, M0-10
 - **Dateien:** `Content/Verse/ftb_creature_pool.verse` (`display_pool_props`)
-- **Assets:** 24 BPs × 96 Pads = 2.304 platzierte Props (Batch per MCP C14; Position = Pad-Mitte + Offset aus `mounts.json`, gestaffelt versteckt)
+- **Assets:** 24 BPs × 96 Pads = 2.304 platzierte Props (Batch per MCP C14; Position = Pad-Mitte + Offset aus `parts_layout.json`, gestaffelt versteckt)
 - **Schritte:** Platzieren (in 16 Batches à 144), Tag je Teil-Typ (`ftb_tag_part_<Art>_<Slot>`), in Verse per Tag + Nähe zum Pad einsortieren, beim Start alle `Hide()`, `ShowCreature(Plot,Pad,C)` zeigt 3 Teile + `SetMaterial`, Bot-Plot-Tauschschleife.
 - **Abnahme:** X2/X4/X5 geloggt für `BotPlots=16`; Actor-Zahl (X6).
 - **Test:** 16B, S (Luis sieht 60 s vom Hub: Aufploppen? FPS?)
@@ -697,7 +702,7 @@ AT-M0-90…95 grün oder mit Fallback entschieden; Frame-Probe der Siegervariant
 #### M1-03 · Save-Service v1 (2 h) [CC]
 - **Abh.:** M1-02, M0-16
 - **Dateien:** `Content/Verse/ftb_save.verse`
-- **Schritte:** Schema 4.3 aus Referenz; `LoadSave`/`MigrateSave`/`ApplySave`/`BuildSave`/`TryCommitState`; Commit-Politik 4.3 (Sofort-Ereignisse + Sammel-Commit ≥ 5 s über `Dirty`); Lade-Fehler-Schutz; Debug-Befehl `AutoTest=99` = Save des ersten Spielers zurücksetzen.
+- **Schritte:** Schema 4.3 aus Referenz; `LoadSave`/`MigrateSave`/`ApplySave`/`BuildSave`/`TryCommitState`; Commit-Politik 4.3 (Sofort-Ereignisse + Sammel-Commit alle 30 s über `Dirty`); Lade-Fehler-Schutz; Debug-Befehl `AutoTest=99` = Save des ersten Spielers zurücksetzen.
 - **Abnahme:** AT-M1-3 PASS (Rundreise: Zustand → Save → neuer State → identisch, 40 Felder verglichen).
 - **Test:** S, Rejoin durch Luis im Selbsttest
 - **API:** `weak_map`, `persistable`, `FitsInPlayerMap` VERIFIED (Doku) + Digest.
@@ -742,7 +747,7 @@ AT-M0-90…95 grün oder mit Fallback entschieden; Frame-Probe der Siegervariant
 #### M1-08 · UI 1: HUD S0 + Toasts + Tutorial-Karte S19 (2 h) [CC]
 - **Abh.:** M1-06
 - **Dateien:** `Content/Verse/ftb_ui.verse`
-- **Schritte:** Verse-UI (P-05); HUD-Elemente GDD 10.3 S0 (Münzen, „+x/s“, Kerne, Nächstes Ziel, Toast-Stapel max. 3 à 2,5 s); Update ≤ 2 Hz; Texte als `<localizes>`-Messages (EN als Standard, DE-Übersetzung vorbereitet in M7); Seltenheit immer Symbol + Text; Safe-Zone-Prozentwerte aus GDD.
+- **Schritte:** Verse-UI (P-05); HUD-Elemente GDD 10.3 S0 (Münzen, „+x/s“, Kerne, Nächstes Ziel, Toast-Stapel max. 3 à 2,5 s); Münz-Ticker ≤ 10 Hz, übrige Felder ≤ 2 Hz (B15); Texte als `<localizes>`-Messages (EN als Standard, DE-Übersetzung vorbereitet in M7); Seltenheit immer Symbol + Text; Safe-Zone-Prozentwerte aus GDD.
 - **Abnahme:** HUD sichtbar, keine Überlappung mit unteren Ecken (30 % B × 35 % H frei), Zahlen = FormatBig.
 - **Test:** S, C (HUD nicht interaktiv → Bewegung frei), M (in M7)
 - **API:** Verse-UI VERIFIED; Fortnite-Schriften in Verse-UI UNVERIFIED → Standardschrift.
@@ -845,7 +850,7 @@ AT-M0-90…95 grün oder mit Fallback entschieden; Frame-Probe der Siegervariant
 #### M2-06 · Icons rendern + importieren (1,5 h) [CC]
 - **Abh.:** M0-07
 - **Dateien:** `blender/gen_icons.py` → `art_src/icons/*.png`
-- **Assets:** A62 (24 Teil-Icons, je Slot so gerendert, dass Kopf-/Körper-/Acc-Icon im 256²-Raster übereinander ein Porträt ergeben: gemeinsamer Kamera-Ausschnitt, Körper-Montagepunkte aus `mounts.json`), A63 Währungen (3), A64 Seltenheits-Symbole (7: ● ◆ ▲ ★ ♛ ✦ ∞ als Textur), A65 Ei-Icons (8)
+- **Assets:** A62 (24 Teil-Icons, je Slot so gerendert, dass Kopf-/Körper-/Acc-Icon im 256²-Raster übereinander ein Porträt ergeben: gemeinsamer Kamera-Ausschnitt, Körper-Montagepunkte aus `parts_layout.json`), A63 Währungen (3), A64 Seltenheits-Symbole (7: ● ◆ ▲ ★ ♛ ✦ ∞ als Textur), A65 Ei-Icons (8)
 - **Abnahme:** 42 PNG 256² RGBA, B6/B7 eingehalten; Porträt-Probe (3 Icons übereinander) sieht zusammenhängend aus (Luis 10 s).
 - **Test:** –
 - **API:** –
@@ -1370,10 +1375,10 @@ Nicht belegte Einstellungsnamen sind mit „UV“ markiert = *UNVERIFIED – pr�
 
 | ID | Name | Ordner (Content) | Format / Quelle | Budget |
 |---|---|---|---|---|
-| A01–A24 | `SM_FTB_<Art>_<Head/Body/Acc>` für Waffelino, Frogurko, Idrantoro, Tagliatakel, Diskolama, Razzopingu, Wolkowal, Bzzkoffro (A01 = Waffelino_Head, A02 = Waffelino_Body, A03 = Waffelino_Acc, … A24 = Bzzkoffro_Acc) | `FTB/Meshes/Creatures/` | FBX ← `gen_species_parts.py` | B2 |
+| A01–A24 | `SM_FTB_<Art>_<Head/Body/Accessory>` für Waffelino, Frogurko, Idrantoro, Tagliatakel, Diskolama, Razzopingu, Wolkowal, Bzzkoffro (A01 = Waffelino_Head, A02 = Waffelino_Body, A03 = Waffelino_Accessory, … A24 = Bzzkoffro_Accessory) | `FTB/Meshes/Creatures/` | FBX ← `gen_species_parts.py` | B2 |
 | A25–A30 | Paketeulo, Bassotto (je 3 Teile, optional) | wie oben | wie oben | B2, nur B1 < 50.000 |
-| A31–A34 | `SM_FTB_Enemy_Staubfussel|Kabelwurm|Dosenpanzer|Ploppblase` | `FTB/Meshes/Enemies/` | ← `gen_misc_meshes.py` | ≤ 2.000 |
-| A35–A37 | `SM_FTB_Boss_Kabelsalat|Mikrowellora|StaubsaugerBaron` | `FTB/Meshes/Bosses/` | ← `gen_misc_meshes.py` | ≤ 25.000 |
+| A31–A34 | `SM_FTB_Enemy_Staubfussel\|Kabelwurm\|Dosenpanzer\|Ploppblase` | `FTB/Meshes/Enemies/` | ← `gen_misc_meshes.py` | ≤ 2.000 |
+| A35–A37 | `SM_FTB_Boss_Kabelsalat\|Mikrowellora\|StaubsaugerBaron` | `FTB/Meshes/Bosses/` | ← `gen_misc_meshes.py` | ≤ 25.000 |
 | A38 | `SM_FTB_Egg` | `FTB/Meshes/Props/` | Skript | ≤ 600 |
 | A39 | `SM_FTB_Capsule` | `FTB/Meshes/Props/` | Skript | ≤ 300 |
 | A40–A48 | `SM_FTB_Pad`, `_Nest`, `_EggMachine`, `_FusionMachine`, `_TotemSegment`, `_Drop_Kern`, `_Core`, `_Portal`, `_Arrow3D` | `FTB/Meshes/Props/` | Skript | je ≤ 1.500 |
@@ -1382,16 +1387,16 @@ Nicht belegte Einstellungsnamen sind mit „UV“ markiert = *UNVERIFIED – pr�
 | A51 | `BP_FTB_<Mesh>` (Creative-Prop-Blueprints, nur Variante A/C) | `FTB/Props/` | UEFN | – |
 | A60 | `T_FTB_Palette` | `FTB/Textures/` | PNG 256×64 | – |
 | A61 | `T_FTB_Noise` | `FTB/Textures/` | PNG 512² | – |
-| A62–A65 | `T_FTB_Icon_<Art>_<Slot>` (24), `T_FTB_Icon_Coin|Kern|Token`, `T_FTB_Rar_0…6`, `T_FTB_Egg_1…8` | `FTB/Textures/UI/` | PNG 256² ← `gen_icons.py` | B6 |
+| A62–A65 | `T_FTB_Icon_<Art>_<Slot>` (24), `T_FTB_Icon_Coin\|Kern\|Token`, `T_FTB_Rar_0…6`, `T_FTB_Egg_1…8` | `FTB/Textures/UI/` | PNG 256² ← `gen_icons.py` | B6 |
 | A66 | `T_FTB_UI_Panel9`, `T_FTB_UI_Ring` | `FTB/Textures/UI/` | PNG 128² ← Python (PIL-frei: stdlib `zlib`+PNG-Schreiber in `tools/gen_ui_tex.py`) | – |
-| A70 | `M_FTB_Creature` | `FTB/Materials/` | UEFN-Material | – |
-| A71–A77 | `MI_FTB_R0_Klassik`, `R1_Neon`, `R2_Gold`, `R3_Kristall`, `R4_Koeniglich`, `R5_Mythisch`, `R6_Kosmisch` | `FTB/Materials/` | MI | – |
-| A78–A83 | `MI_FTB_Ev_Gruender|Frosti|Funki|Schleimi|Kosmi|Festi` | `FTB/Materials/` | MI | – |
+| A70 | `M_FTB_Creature` + `M_FTB_Creature_Crystal` | `FTB/Materials/` | UEFN-Material | – |
+| A71–A77 | `MI_FTB_Rarity_0` … `MI_FTB_Rarity_6` (Klassik, Neon, Gold, Kristall*, Königlich, Mythisch, Kosmisch; *Parent `M_FTB_Creature_Crystal`) | `FTB/Materials/` | MI | – |
+| A78–A83 | `MI_FTB_Event_Gruender\|Frosti\|Funki\|Schleimi\|Kosmi\|Festi` | `FTB/Materials/` | MI | – |
 | A84 | `MI_FTB_Sternen` | `FTB/Materials/` | MI | – |
 | A85–A87 | `M_FTB_Enemy` + `MI_FTB_Enemy_Base` + `MI_FTB_Boss_<Variante>` (6); `M_FTB_Prop` + `MI_FTB_Prop`, `MI_FTB_Pad_<Farbe>` (7); `M_FTB_VFX_Add` | `FTB/Materials/` | – | – |
 | V01–V22 | `NS_FTB_…` (22 Systeme, Liste 5.7) | `FTB/VFX/` | Niagara | B17 |
-| A100–A129 | `A_FTB_Syl_<Art>_<P|M|S>` (30) | `FTB/Audio/Syllables/` | WAV ← `tts_syllables.py` | B18 |
-| A130–A137 | `A_FTB_UI_Click|Focus|Open|Close|Buy|Error|CoinTick|Kern` | `FTB/Audio/UI/` | WAV ← `gen_sfx.py` | – |
+| A100–A129 | `A_FTB_Syl_<Art>_<P\|M\|S>` (30) | `FTB/Audio/Syllables/` | WAV ← `tts_syllables.py` | B18 |
+| A130–A137 | `A_FTB_UI_Click\|Focus\|Open\|Close\|Buy\|Error\|CoinTick\|Kern` | `FTB/Audio/UI/` | WAV ← `gen_sfx.py` | – |
 | A138–A144 | `A_FTB_Fan_R0…R6` | `FTB/Audio/Fanfare/` | WAV ← `gen_sfx.py` | – |
 | A145–A152 | `A_FTB_Sting_W1…W8` | `FTB/Audio/Stinger/` | WAV ← `gen_sfx.py` | – |
 | A153–A160 | `A_FTB_Vox_<Art>` (8) | `FTB/Audio/Vox/` | WAV ← Luis + ffmpeg | – |
