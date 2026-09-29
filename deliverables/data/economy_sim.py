@@ -513,8 +513,8 @@ def apply_overrides(overrides):
     if P["pads_max"] < P["pads_start"]:
         sys.exit("FEHLER: pads_max < pads_start")
     if P["pads_start"] + len(P["pad_costs"]) < P["pads_max"]:
-        sys.exit(f"FEHLER: pads_max={P['pads_max']} braucht {P['pads_max'] - P['pads_start']} Werte in pad_costs, "
-                 f"vorhanden {len(P['pad_costs'])}")
+        print(f"HINWEIS: pads_max={P['pads_max']}, aber nur {len(P['pad_costs'])} Pad-Kosten -> effektiv "
+              f"{pads_max()} Pads", file=sys.stderr)
     return log
 
 

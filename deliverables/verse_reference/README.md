@@ -13,7 +13,7 @@ Kommentare sind auf Deutsch, Bezeichner auf Englisch. Jede API-Stelle trägt **V
 | `ftb_economy.verse` | ~225 | Einkommen (Pad, Totem, Rebirth, Index, IIT-Deckel ×2,5, Dös-Regel), Kostenkurven, Ei-Quoten mit Pity, Wellen-Belohnungen, `FormatBig` (K … Vg), `ApplyRebirth` |
 | `ftb_fusion.verse` | ~195 | Namensgenerator (Silben, Bindevokal, Vokal-Streichung, Dreifach-Kappung), Basisnamen, 8 Geheim-Rezepte, Vorschau, Resonanz mit Pity, Neben-Trait ab Gen 5 / Spiegel-Fusion, Auto-Vorschlag |
 | `ftb_creature_pool.verse` | ~155 | Prop-Pool 6 Pads × 24 Teile je Plot, Montage-Offsets (identisch zu `blender/gen_species_parts.py`), Show/Hide/TeleportTo, `SetMaterial`, Lunge und Landen-Squash per `MoveTo` |
-| `ftb_combat.verse` | ~250 | Wellenformel, KK, Teamwahl, Hype-Takt-Tracker (Fenster ±150/±350 ms, +100 ms Latenz, Spam-Schutz), Wellen-Simulation mit 0,25-s-Tick, Server-Boss (HP-Skalierung, Phasen 66/33 %, Sync-Smash, Hype-Zone, Teilnahme-Belohnung) |
+| `ftb_combat.verse` | ~250 | Wellenformel, KK, Teamwahl, Hype-Takt-Tracker (Fenster ±150/±350 ms, +100 ms Latenz, Spam-Schutz), Wellen-Simulation mit 0,25-s-Tick, Server-Boss (HP-Skalierung, Phasen 66/33 %, Sync-Smash, Hype-Zone als Ring 2.000–3.000 cm in xy, Teilnahme-Belohnung) |
 | `ftb_time.verse` | ~105 | Zeitquelle: `GetSecondsSinceEpoch` mit Plausibilitätsprüfung, sonst Session-Kalender; Event-Woche per Wanduhr / Konstante (Fallback A) / Spielzeit (Fallback B); Rotation nach W8; Offline- bzw. Rückkehr-Bonus |
 | `ftb_events.verse` | ~205 | 8-Wochen-Kalender als Daten, Wochenend-Modifikatoren, 16 Codes mit Gültigkeit (21 Tage, `HALLOHASKE` dauerhaft) und atomarer Einlösung, 7-Tage-Belohnung mit Streak und Streak-Schutz |
 | `ftb_shop_iit.verse` | ~165 | Spiegel-Bits der 14 Angebote, Entitlement-Muster, idempotenter Abgleich (Zustände statt Gutschriften), 2-Phasen-Ledger für den Verbrauchsartikel Münz-Rausch, Altersprüfung einmal pro Sitzung, `BuyOffer` gewährt nie selbst |
@@ -45,7 +45,7 @@ Verse kompiliert ein Modul als Ganzes, daher gibt es keine echte Reihenfolge. Zu
 | `GetSecondsSinceEpoch()` Rückgabetyp und Effekte | time | Existenz LIKELY (API-Seite im Suchindex) | `ReadEpoch()` gibt `0.0` zurück, dann greifen automatisch Session-Kalender und Fallback A/B |
 | `creative_prop.Hide()/Show()` | pool | LIKELY | `TeleportTo` unter die Map |
 | `creative_prop.SetMaterial(material)` und `@editable []material` | pool | LIKELY / UNVERIFIED | Asset-Digest-Pfad statt `@editable`; sonst Aura-VFX |
-| `MoveTo(transform, Zeit)` mit Skalierung | pool | LIKELY | `MoveTo(Position, Rotation, Zeit)` ohne Squash |
+| `MoveTo(transform, Zeit)` mit Skalierung | pool | LIKELY | `MoveTo(Position, Rotation, Zeit)` ohne Squash; dann `DisplayScale = 1.0` (Teile ungeskaliert) |
 | `rotation.RotateVector`, `vector3 * float`, `Distance` | pool, combat | LIKELY | Yaw-Rotation manuell mit `Sin`/`Cos` |
 | `input_trigger_device.PressedEvent` auf „Fire“ | manager | LIKELY | UMG-/Verse-Button „SMASH“ ruft `Hype.RegisterPress` |
 | `teleporter_device.Teleport(agent)` | manager | LIKELY | Player-Spawner je Plot |

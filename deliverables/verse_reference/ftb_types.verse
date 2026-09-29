@@ -103,7 +103,7 @@ ftb_creature := struct:
     Rarity:int = 0     # 0..6
     Level:int = 1      # 1..150
     Gen:int = 0        # 0..10
-    Form:int = 0       # 0 = Standard-Form der Seltenheit, 1..31 = Event-/Spezialform
+    Form:int = 0       # 0 = Standard; 1 Gründer, 2 Frosti, 3 Paket, 4 Funki, 5 Schleimi, 6 Bass, 7 Kosmi, 8 Festi, 9 Sternen (IIT); 10..31 frei (Bauplan §4.2)
     Flags:int = 0      # Bit 0 = Neben-Trait aktiv, Bit 1 = Team fixiert, Bit 2 = Geheim-Rezept, Bit 3 = IIT-Kreatur
     SideAcc:int = 0    # Art-ID des Neben-Traits (50 % Stärke, ab Gen 5 / Spiegel-Fusion), 0 = keiner
 

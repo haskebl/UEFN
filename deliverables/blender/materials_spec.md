@@ -9,7 +9,7 @@
 | `M_FTB_Creature` | Master-Material (Opaque, Default Lit) | alle 24 Kreatur-Teile, 7 Seltenheiten, Event-Formen |
 | `M_FTB_Creature_Crystal` | Kopie mit Blend Mode **Masked** + Dither | nur für Seltenheit 3 „Kristall“ (halbtransparent per Dither statt Translucent, weil billiger und sortierfrei) |
 | `MI_FTB_Rarity_0` … `MI_FTB_Rarity_6` | Material-Instanzen | Klassik, Neon, Gold, Kristall, Königlich, Mythisch, Kosmisch |
-| `MI_FTB_Event_Frosti/Funki/Schleimi/Kosmi/Festi/Gruender` | Material-Instanzen | Event-Formen (nur Parameter, keine neuen Meshes) |
+| `MI_FTB_Event_Gruender/Frosti/Paket/Funki/Schleimi/Bass/Kosmi/Festi` | Material-Instanzen (Form-Codes 1–8, Bauplan §4.2) | Event-Formen (nur Parameter, keine neuen Meshes); Paket/Bass nur als Ersatz, falls die Bonus-Arten entfallen |
 | `T_FTB_Palette` | Textur 256×64, von `gen_species_parts.py` erzeugt | Farbfelder (16×4 Zellen à 16 px) |
 | `T_FTB_Noise` | Textur 512×512, Graustufen-Rauschen | Kristall-Glitzer, Kosmos-Sternenfeld |
 
@@ -43,7 +43,39 @@ Der Tausch der Instanz zur Laufzeit läuft über `creative_prop.SetMaterial` (LI
 | `BobAmplitude` | Scalar (cm) | 4 | WPO-Idle: Sinus auf Z |
 | `BobFrequency` | Scalar (Hz) | 0.8 | |
 | `SquashAmount` | Scalar | 0.05 | WPO: Z-Stauchung synchron zum Bob |
-| `DitherOpacity` | Scalar | 1 | nur Crystal-Variante (0.6) |
+| `DitherOpacity` | Scalar | 1 | nur Crystal-Variante (0.6): Schwelle der Dither-Opacity-Maske |
+| `PhaseGridCm` | Scalar (cm) | 500 | Rastergröße für die Bob-Phase (alle Teile auf demselben Pad = gleiche Phase) |
+
+**Verbindlich (Bauplan §5.4):** Genau diese Parameternamen gelten im Material und in allen MIs. `StarfieldColorA`/`StarfieldColorB` sind zwei Vector-Parameter (Default `#00E5FF` / `#FF3DF2`). `RainbowShimmer` ist ein Scalar 0/1 (Regenbogen-Hybrid, GDD §4.8), Wirkung siehe §3a.
+
+## 3a. Knotengraph `M_FTB_Creature` (für MCP-Bau oder Luis-Klickliste)
+
+Knotennamen = Standard-Unreal-Material-Ausdrücke. Ob alle im UEFN-Material-Editor verfügbar sind: **UNVERIFIED** → Probe P2 (M0-14) und MCP-Fähigkeit C5b (M0-03). Fehlt ein Knoten, entfällt nur der betroffene Effekt (Fallback in Klammern); die Basisfarbe (Knoten 1–5) ist Pflicht. Parameter-Knoten werden nicht mitgezählt. Kernpfad = Zeilen 1–15 (Zeilen 13/14 sind kurze Knotenketten, zusammen ≈ 20 Rechenknoten), Zusatz Z1–Z3 optional.
+
+| Nr. | Knoten | Eingänge | Ausgang → |
+|---|---|---|---|
+| 1 | TextureSample `Palette` (Param2D, Default `T_FTB_Palette`, Sampler Color) | UV0 | RGB → 3.A |
+| 2 | VertexColor | – | RGB → 3.B · A (Maske) → 5, 7 |
+| 3 | Lerp | A = 1.RGB, B = 2.RGB, Alpha = `UseVertexColor` | **Basis** → 4, 6, 9 |
+| 4 | Multiply | Basis × `TintColor` | → 6.B |
+| 5 | Multiply | `TintStrength` × 2.A | → 6.Alpha |
+| 6 | Lerp | A = Basis, B = 4, Alpha = 5 | **Farbe** → BaseColor, 9 |
+| – | Parameter direkt | `Metallic` → Metallic · `Roughness` → Roughness | – |
+| 7 | Fresnel | ExponentIn = `FresnelExponent`, BaseReflectFraction 0 | → 8 |
+| 8 | Multiply (3 Eingänge verkettet) | 7 × `FresnelColor` × `FresnelIntensity` × 2.A | → 12 |
+| 9 | Multiply | Farbe × `EmissiveBoost` | → 12 |
+| 10 | Panner | Coordinate = ScreenPosition (ViewportUV), Speed = (`StarfieldPanSpeed`, `StarfieldPanSpeed`) | → 11 UV |
+| 11 | TextureSample `T_FTB_Noise` (Sampler Grayscale) | UV = 10 | R → 11b |
+| 11b | Multiply | 11.R × `NoiseSparkle` × Lerp(`StarfieldColorA`, `StarfieldColorB`, 11.R) (Lerp zählt mit) | → 12 |
+| 12 | Add (verkettet) | 8 + 9 + 11b (+ Z1) | → **Emissive Color** |
+| 13 | ObjectPositionWS → Divide (/`PhaseGridCm`) → Floor → Dot mit (0,37; 0,37) → Frac → × 6,2832 | – | **Phase** → 14 |
+| 14 | Time × `BobFrequency` × 6,2832 + Phase → Sine | – | **S** → 15, Z2 |
+| 15 | Multiply S × `BobAmplitude` → AppendVector(0, 0, ·) | – | → **World Position Offset** (+ Z2) |
+| Z1 | RainbowShimmer (optional) | `RainbowShimmer` × 0,3 × (0,5 + 0,5 · Sine(Time·2 + (0; 2,09; 4,19))) | → 12 (Fallback: weglassen, Regenbogen nur als Namensschild-Farbe) |
+| Z2 | Squash (optional) | (AbsoluteWorldPosition.z − ObjectPositionWS.z) × `SquashAmount` × S | → addiert auf 15.Z (Fallback: weglassen) |
+| Z3 | nur `M_FTB_Creature_Crystal` | DitherTemporalAA(AlphaThreshold = `DitherOpacity`) | → Opacity Mask (Blend Mode Masked; Fallback: opak + Fresnel-Intensität 1,0) |
+
+Klickliste-Regel (falls MCP C5b = nein): Claude Code schreibt diese Tabelle als nummerierte Schritte „Knoten X anlegen, Pin A mit Y verbinden“; Luis braucht dafür ≈ 30 min.
 
 **WPO-Idle (LIKELY in UEFN, GDD §11):** `Offset.Z = BobAmplitude * sin(2π · BobFrequency · Time + Phase)`. Die Phase stammt aus der **Objekt-Position** (Object Position node, gerastert auf 500 cm: `floor(ObjPos / 500)` → Hash). Damit laufen Kopf, Körper und Accessoire derselben Kreatur synchron, weil sie auf demselben Pad stehen. Die Squash-Komponente skaliert die lokale Z-Höhe relativ zum Pad-Boden. Die Art-spezifischen Animationen aus GDD §4.5 („Frosch-Sprung“, „Summ-Zittern 12 Hz“ …) werden über `BobAmplitude`/`BobFrequency` pro Art angenähert; mehr ist ohne Rigging nicht geplant.
 **Fallback:** WPO aus, Verse-`MoveTo`-Bob nur auf dem eigenen und dem angesehenen Plot.
@@ -68,8 +100,10 @@ Farbenblind-Regel (GDD §8): Die Seltenheit ist zusätzlich immer als Symbol und
 |---|---|---|---|
 | `MI_FTB_Event_Gruender` | W1 | `#FFD23F` / 0.3 | goldene Banderole per Fresnel |
 | `MI_FTB_Event_Frosti` | W2 | `#BFE9FF` / 0.5 | Sparkle 0.6, Roughness 0.15 |
+| `MI_FTB_Event_Paket` | W3 (Ersatz-Form auf Bzzkoffro) | `#D32F2F` / 0.45 | Fresnel `#FFFFFF` / 0.5 (Geschenkband-Kante), Roughness 0.35; Farben = Paketeulo-Palette GDD §11 |
 | `MI_FTB_Event_Funki` | W4 | `#FF9F1C` / 0.3 | Emissive 0.3, Sparkle 0.8 |
 | `MI_FTB_Event_Schleimi` | W5 | `#7CFF4F` / 0.45 | Roughness 0.05, Bob-Amplitude ×1,5 |
+| `MI_FTB_Event_Bass` | W6 (Ersatz-Form auf Diskolama) | `#8D5A3B` / 0.4 | Emissive 0.2, Fresnel `#212121` / 0.3; Farben = Bassotto-Palette GDD §11 |
 | `MI_FTB_Event_Kosmi` | W7 | wie Rarity_6, aber `StarfieldColorA` `#7C4DFF` | |
 | `MI_FTB_Event_Festi` | W8 | – | `RainbowShimmer` 1 |
 
@@ -77,8 +111,8 @@ Farbenblind-Regel (GDD §8): Die Seltenheit ist zusätzlich immer als Symbol und
 
 | Textur | Auflösung | Kompression | sRGB | Mips | Hinweis |
 |---|---|---|---|---|---|
-| `T_FTB_Palette` | 256 × 64 | Default (BC1/DXT1) oder **UserInterface2D/VectorDisplacement**, falls Farbbluten sichtbar | ja | ja, Filter **Nearest** falls Kanten bluten | Zellen 16 px, UVs nutzen nur die innere Hälfte |
-| `T_FTB_Noise` | 512 × 512 | Grayscale (G8) | nein | ja | Kristall, Kosmos |
+| `T_FTB_Palette` | 256 × 64 | **UserInterface2D (RGBA)** (verbindlich, Bauplan §5.5) | ja | **keine**, Filter **Nearest** | Zellen 16 px, UVs nutzen nur die innere Hälfte; kein Farbbluten durch Mips |
+| `T_FTB_Noise` | 512 × 512 | Grayscale (G8) / Masks | nein | ja, Filter Bilinear | Kristall, Kosmos; erzeugt von `tools/gen_ui_tex.py --noise` (Bauplan M0-07) |
 | UI-Teil-Icons (24) | 256 × 256 | UserInterface2D | ja | nein | orthografische Blender-Renders (GDD §10.2) |
 | Seltenheits-Symbole (7) | 128 × 128 | UserInterface2D | ja | nein | ● ◆ ▲ ★ ♛ ✦ ∞ als Textur |
 

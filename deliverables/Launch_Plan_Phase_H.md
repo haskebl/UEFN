@@ -3,7 +3,9 @@
 **Creator:** Luis (Creator-Name „haske“) · **Stand:** 29.09.2026 · **Konzept:** „Fuse & Fight“ (Eier ausbrüten → eigene Brainrot-Kreaturen verdienen auf dem Plot → zwei Kreaturen zu einem modularen Hybriden mit Mash-up-Namen fusionieren → Hybride kämpfen solo gegen Wellen und im Koop gegen Server-Bosse)
 **Ziel-Release:** Do 10.12.2026 (Fenster 8.–15.12.) · **Live-Ops:** 8 Wochen zeitgesteuert im Release-Build · **Tester:** 3 · **IIT:** deterministisch ab Tag 1
 
-> **Quellenlage.** Grundlage sind `reports/Brainrot Map Marktanalyse UEFN.md` und die Notizen `discovery_platform_benchmarks.md`, `red_team_review.md` und `ip_rules_monetization.md`. Dazu kamen wenige Websuchen am 29.09.2026 (nur Snippets, Seiten nicht geöffnet). Labels: **OFFICIAL** (Epic-Doku oder Epic-News per Snippet), **CLAIMED** (Blog oder Presse), **ESTIMATED** (eigene Ableitung), **UNVERIFIED** (Wert nicht bestätigt, vor Nutzung im Creator Portal prüfen). **Keine Zahl in diesem Plan ist gemessen.** Der Titel ist ein Platzhalter. Das parallel entstehende GDD kann ihn noch ändern, alle Regeln hier gelten dann für den neuen Titel genauso.
+> **Quellenlage.** Grundlage sind `reports/Brainrot Map Marktanalyse UEFN.md` und die Notizen `discovery_platform_benchmarks.md`, `red_team_review.md` und `ip_rules_monetization.md`. Dazu kamen wenige Websuchen am 29.09.2026 (nur Snippets, Seiten nicht geöffnet). Labels: **OFFICIAL** (Epic-Doku oder Epic-News per Snippet), **CLAIMED** (Blog oder Presse), **ESTIMATED** (eigene Ableitung), **UNVERIFIED** (Wert nicht bestätigt, vor Nutzung im Creator Portal prüfen). **Keine Zahl in diesem Plan ist gemessen.** Der Titel ist ein Platzhalter. Das parallel entstehende GDD kann ihn noch ändern, alle Regeln hier gelten dann für den neuen Titel genauso. Der Recherchebericht liegt im Paket als `Recherchebericht_Phasen_A-E.md` (im Repo: `research/bericht_marktanalyse.md`).
+
+> **Abgleich mit GDD und Bauplan (Stand 29.09.2026, Bauplan-Entscheidungen P-01/P-08):** Wo dieser Plan und das GDD sich widersprachen, gilt das GDD. Geändert sind deshalb: **Codes** nur laut GDD 7.2 (16 Codes, u. a. `HALLOHASKE`, `FUSEFUN`; Joker-Codes entfallen), **Event-Inhalte** laut GDD 7.4 (W1–W8, Bonus-Arten Paketeulo W3 / Bassotto W6, 8 Geheim-Rezepte), **Wochenend-Modifikatoren Sa–So (UTC)** statt Fr–So, **Ersatztitel** „FUSE THE BRAINROTS!“ (E-040). Der Blindtest 16.–22.11. und der tägliche Soft-Launch-Messplan 23.–27.11. entfallen als Pflicht; es bleibt bei **3 Testern an 2 Terminen** (Sa 31.10., Sa 28.11.; Ausweichtermin für Test 2 siehe 4.1). Die Posting-Vorlage für Codes erzeugt Claude Code als `docs/code_kalender.md` aus `data/codes.csv` (Bauplan M8-07).
 
 ---
 
@@ -38,9 +40,10 @@
 | **FUSE THE BRAINROT** | Folgt exakt der Formel „VERB + THE BRAINROT“ der Top-Maps (STEAL / GROW / BEAT / Fight THE BRAINROT); „Fuse“ ist aus der „Fuse Machine“ bekannt; kurz | Der Kampf-Teil steht nicht im Titel, ihn zeigen Thumbnail und Beschreibung | **Nr. 1** |
 | FUSE & FIGHT BRAINROTS | Beide Verben | Zu nah an „Fight The Brainrot“ (211K Peak), Risiko Klon-Eindruck und Verwechslung; 22 Zeichen | Nur als Unterzeile im Thumbnail |
 | FUSE THE BRAINROT 🧬 | Emoji hebt ab (vgl. „Steal An Egg 🥚“) | Emoji-Darstellung auf allen Plattformen **UNVERIFIED** | A/B-fähig nur über den Titel, nicht über das Thumbnail-Tool, daher später |
-| BRAINROT FUSION LAB | eigenständig | Bricht mit der gelernten Verb-Formel; „Lab“ ist schwaches Suchwort | Rückfall, falls „FUSE THE BRAINROT“ schon vergeben ist |
+| **FUSE THE BRAINROTS!** | Gleiche Formel, minimal abgesetzt; so im GDD 1.1 festgelegt (E-040) | Kaum Unterschied beim Suchen | **Rückfall**, falls „FUSE THE BRAINROT“ schon exakt vergeben ist |
+| BRAINROT FUSION LAB | eigenständig | Bricht mit der gelernten Verb-Formel; „Lab“ ist schwaches Suchwort | nur als zweite Stufe beim CTR-Abbruch (Abschnitt 6), nicht als Ersatztitel |
 
-**Pflicht vor dem Eintragen:** Auf fortnite.gg und in der Fortnite-Suche prüfen, ob es „FUSE THE BRAINROT“ schon gibt. Existiert ein gleichnamiger Titel, droht Verwechslung und die Abwertung ähnlicher Inseln. Dann „BRAINROT FUSION LAB“ nehmen oder den Titel aus dem GDD.
+**Pflicht vor dem Eintragen:** Auf fortnite.gg und in der Fortnite-Suche prüfen, ob es „FUSE THE BRAINROT“ schon gibt (Bauplan Q-MKT-3). Existiert ein gleichnamiger Titel, droht Verwechslung und die Abwertung ähnlicher Inseln. Dann gilt der Ersatztitel **„FUSE THE BRAINROTS!“** (GDD 1.1, E-040).
 
 ### 1.3 Beschreibung (≤ 80 Zeichen pro Zeile)
 
@@ -159,8 +162,8 @@ Gemeinsame Palette (Markenfarben):
 - **Lesbarkeit klein:** Der Boss funktioniert allein als Farbfläche mit Augen. Der Hybrid braucht die Cyan-Kontur, sonst geht er bei 160×90 verloren. Deshalb eine Konturlinie von 8 px in Krita.
 - **Risiko:** ähnelt eher „Fight The Brainrot“. Das A/B-Ergebnis zeigt, ob das hilft (bekanntes Genre) oder schadet (Klon-Eindruck).
 
-**Variante C – „Winter-Fusion“ (saisonal, nur 17.12.–6.1., während das Frost-Ei live ist)**
-- **Komposition:** wie der Gewinner aus A/B, damit der Test nur die Saison misst. Bei A: Kreatur A trägt eine Winter-Accessoire-Variante (Mütze, Schal, **eigenes** Design), Kreatur B ist die Winter-Event-Art, der Hybrid hat Frost-Partikel. Unten Schnee-Kante, oben leichter Schneefall. Der Schnee darf den Hybriden nicht verdecken.
+**Variante C – „Winter-Fusion“ (saisonal, nur 17.12.–6.1., Winterfest W2–W4; das Frost-Ei selbst ist nur in W2 17.–23.12. kaufbar)**
+- **Komposition:** wie der Gewinner aus A/B, damit der Test nur die Saison misst. Bei A: Kreatur A trägt eine Winter-Accessoire-Variante (Mütze, Schal, **eigenes** Design), Kreatur B ist eine Frosti-Event-Form (GDD 7.4 W2), der Hybrid hat Frost-Partikel. Unten Schnee-Kante, oben leichter Schneefall. Der Schnee darf den Hybriden nicht verdecken.
 - **Farben:** Grund `#0E3A6B` → `#051A33`; Eis `#BFF3FF`; Schnee `#FFFFFF`; Akzente Rot `#E8283C` und Gold `#FFC83D`; Fusionsblitz bleibt `#FFD21F`, damit die Wiedererkennung bleibt.
 - **Text:** wie beim Gewinner. Kein „Christmas“, kein „Event Rewards“.
 - **Emotion:** wie der Gewinner, dazu Winter-Freude.
@@ -240,15 +243,18 @@ Allgemein:
 | Datum | Meilenstein | Wer |
 |---|---|---|
 | bis So 15.11. | **Feature-Freeze** (Red Team). Danach nur Bugfixes, Balance und Winter-Inhalte | Luis + Claude Code |
-| Mo 16.11. – So 22.11. | Blindtest mit den 3 Testern (Gate aus dem Bericht): Zeit bis zur ersten Fusion unter 3–5 min, ≥ 70 % Zweit-Fusion freiwillig, Median-Session über 20 min | Luis |
-| Mo 23.11. | **Soft Launch Start:** privater Code mit ≤ 3 Freunden (siehe 4.2). Das Portal bietet dafür private Versionen oder Playtest-Gruppen an; Name und Obergrenze der Funktion sind **UNVERIFIED** | Luis |
-| 28.11. oder 5.12. | **Chapter-8-Start (geleakt).** Neue UEFN-Version kann Neu-Validierung und einen neuen Upload erzwingen (ESTIMATED). Einen Tag nach dem Update: Projekt in der neuen UEFN-Version öffnen, Verse-Build prüfen und einen Smoke-Test spielen | Luis + Claude Code |
+| ~~Mo 16.11. – So 22.11.~~ | ~~Blindtest mit den 3 Testern~~ **entfällt** (Bauplan P-01, Luis-Vorgabe „3 Tester an 2 Terminen“). Die Gate-Werte (erste Fusion < 5 min, Zweit-Fusion, Median-Session) misst Test 1 am Sa 31.10. | – |
+| Mo 23.11. | **Private Version (RC) für die 3 Tester** zum freien Spielen, kein Pflichttermin (siehe 4.2). Das Portal bietet dafür private Versionen oder Playtest-Gruppen an; Name und Obergrenze der Funktion sind **UNVERIFIED** | Luis |
+| **Sa 28.11.** | **Test 2** (zweiter und letzter Menschen-Test, Bauplan M8-02). **Ausweichtermin** (mit den Testern schon im Oktober vereinbart): Fr 27.11. 17:00–21:00 **oder** So 29.11. 11:00–18:30 – ersetzt den 28.11., kein zusätzlicher Termin | Luis + 3 Tester |
+| 28.11. oder 5.12. | **Chapter-8-Start (geleakt).** Neue UEFN-Version kann Neu-Validierung und einen neuen Upload erzwingen (ESTIMATED). Ist der 28.11. als Chapter-Start bestätigt, wandert Test 2 auf den Ausweichtermin. Einen Tag nach dem Update: Projekt in der neuen UEFN-Version öffnen, Verse-Build prüfen und einen Smoke-Test spielen (Bauplan M8-05) | Luis + Claude Code |
 | Mo 30.11. – Mi 2.12. | Fixes aus dem Soft Launch; Metadaten, Thumbnails A/B/C, IARC und IIT-Angebote im Portal fertig | Luis + Claude Code |
 | **Do 3.12.** | **Zur Review einreichen** (spätester Termin laut Bericht: 5.12.) | Luis |
 | 4.–9.12. | Review. Bei Ablehnung: Grund beheben und am selben Tag neu einreichen | Luis |
 | **Do 10.12., ca. 16:00 MEZ** | **Public Release.** Ob sich die Freigabe nach der Genehmigung manuell zurückhalten lässt, ist **UNVERIFIED**. Falls nicht: nicht früher als 7.12. einreichen, damit der Release nicht auf Chapter-8-Tage fällt. Spätester sinnvoller Release: 15.12. Kommt die Genehmigung später, trotzdem sofort veröffentlichen, denn die Ferien laufen bis ≈6.1. | Luis |
 
 ### 4.2 Soft Launch (23.11.–2.12.): messen → fixen
+
+> **Gültigkeit (Bauplan P-01, E-075):** Pflicht ist nur **Test 2 am Sa 28.11.** (bzw. Ausweichtermin). Der Tages-Messplan unten ist **optional**: Er gilt nur, wenn die Tester freiwillig spielen, und löst keinen zusätzlichen Termin aus. Go/No-Go = Bauplan M8-03; das Kriterium „Rückkehr am Tag 2“ ist nur Info.
 
 **Ziel:** Blocker vor dem Discover-Test finden. Drei Personen liefern **keine Statistik**, nur Bugs und grobe Signale (Red Team).
 
@@ -273,7 +279,7 @@ Allgemein:
   Ob die Events auch in privaten Versionen gezählt werden, ist **UNVERIFIED**. Deshalb zusätzlich Stoppuhr und Beobachtung.
 - Jeder der 3 Freunde spielt auf einer **anderen Plattform**, idealerweise Konsole mit Controller, Handy mit Touch und Switch bzw. Low-End. Luis spielt auf dem PC.
 
-**Messplan:**
+**Messplan (optional, nur bei freiwilligem Spielen):**
 
 | Tag | Was | Messung |
 |---|---|---|
@@ -282,14 +288,15 @@ Allgemein:
 | Mi 25.11. | Koop-Session mit allen 4 um 18 Uhr | Boss-Balance zu viert. Server-Performance (Timing Insights, Lags?) |
 | Do 26.11. | Zeit-Unlock-Test: Systemdatum bzw. Test-Offset auf Winterfest, Woche 3 und Woche 8 stellen (Debug-Schalter nur in der privaten Version) | Schaltet jeder Event-Block zur richtigen Zeit frei und wieder ab? Werden Codes nur im gültigen Zeitraum angenommen? |
 | Fr 27.11. | Kurzumfrage (Discord-Formular, 5 Fragen): Was war das Coolste? Was nervt? Welchen Hybriden hast du gezeigt? Würdest du morgen spielen? Hast du einen Kauf erwogen, und warum (nicht)? | Stichworte ins Bug- und Feedback-Board |
-| Sa/So 28.–29.11. | Freies Spielen am Wochenende; Luis nimmt Rohmaterial für die Clips 1–5 auf | Session-Länge laut Analytics bzw. Selbstauskunft |
+| Sa 28.11. (oder Ausweichtermin) | **Test 2 (Pflicht)** laut `_context/playtests.md`; danach freies Spielen, Luis nimmt Rohmaterial für die Clips 1–5 auf | Save-Vergleich, Go/No-Go-Liste, Session-Länge laut Analytics bzw. Selbstauskunft |
 | Mo 30.11. – Mi 2.12. | Fixen, Einreichen vorbereiten | — |
 
-**Go/No-Go für die Einreichung am 3.12.:**
+**Go/No-Go für die Einreichung am 3.12. (maßgeblich: Bauplan M8-03):**
 - kein Blocker, kein Spielstand-Verlust, kein Absturz
 - erste Fusion bei allen unter 5 min
-- mindestens 2 von 3 Freunden sind am Tag 2 von selbst zurückgekommen
 - der Controller- und Touch-Durchlauf ist komplett ohne Maus möglich
+- IIT-Flows (Bauplan M7-07) ok
+- *nur Info, kein Kriterium:* Sind Tester am Tag 2 von selbst zurückgekommen?
 
 Ist ein Punkt rot, zuerst diesen Punkt beheben. Die Einreichung darf sich dafür bis 7.12. verschieben.
 
@@ -313,17 +320,17 @@ Laut Doku liefert die API: Peak-CCU, Unique Players, Plays, Minutes Played, Minu
 
 | Tag | Datum | Build-Kalender (automatisch) | Luis | Claude Code (lokal) | Messen |
 |---|---|---|---|---|---|
-| **0** | Do 10.12. | Launch-Woche: Starter-Code `FUSE1` aktiv, „Fusion der Woche“ #1 | 16:00 Release freischalten, A/B-Test Runde 1 (A vs. B) **im Moment des Release** starten. Island-Code auf Discord, TikTok und YouTube posten, Clip 1 posten. 18–20 Uhr mit den 3 Freunden auf öffentlichem Server spielen (Seed-CCU, Stimmung). Bug-Channel beobachten | `kpi_pull.py` einrichten und erster Pull (Stundenwerte). Bug-Meldungen aus Discord in `bugs.md` sortieren (Blocker, Major, Minor) | API stündlich: CCU. CP: erste Impressions (vermutlich verzögert) |
-| **1** | Fr 11.12. | Erstes Wochenend-Event „Doppel-Brut-Wochenende“ (kostenlos, für alle, keine Käufe) | Clip 2 posten. Bugs reproduzieren. **Entscheidung Hotfix 1** (nur Blocker und Major) | Hotfix-Patches in Verse vorbereiten und gegen den Digest bauen; Changelog-Text für Discord | CP: Impressions, CTR A/B, Plays. AD: Funnel `egg_first_hatch` → `fuse_1` → `fuse_2` (Drop-off?) |
-| **2** | Sa 12.12. | Wochenend-Event | **Hotfix 1 einreichen**, falls nötig (Review-Dauer unbekannt). Clip 3. 30 min öffentlich mitspielen und beobachten | Tagesbericht: erster D1-Wert der Kohorte vom Tag 0 | **D1 (Kohorte Tag 0)**, Ø-Minuten pro Spieler, CTR je Variante |
-| **3** | So 13.12. | Wochenend-Event, Ende 23:59 UTC | Clip 4. Discord: erste „Zeig deinen Hybriden“-Galerie | Balancing-Analyse aus AD: Wo brechen Spieler ab (Welle X, Boss)? Vorschlag für Werte-Anpassung (nur Daten-Tabelle) | D1 Tag 1, Peak-CCU Wochenende, Click→Play |
+| **0** | Do 10.12. | Event-Woche W1 „Frisch geschlüpft“: Gründer-Ei, Codes `HALLOHASKE` (dauerhaft) und `FUSEFUN` aktiv | 16:00 Release freischalten, A/B-Test Runde 1 (A vs. B) **im Moment des Release** starten. Island-Code auf Discord, TikTok und YouTube posten, Clip 1 posten. 18–20 Uhr mit den 3 Freunden auf öffentlichem Server spielen (Seed-CCU, Stimmung). Bug-Channel beobachten | `kpi_pull.py` einrichten und erster Pull (Stundenwerte). Bug-Meldungen aus Discord in `bugs.md` sortieren (Blocker, Major, Minor) | API stündlich: CCU. CP: erste Impressions (vermutlich verzögert) |
+| **1** | Fr 11.12. | Normalbetrieb W1 (Wochenend-Modifikator startet erst Sa 00:00 UTC) | Clip 2 posten. Bugs reproduzieren. **Entscheidung Hotfix 1** (nur Blocker und Major) | Hotfix-Patches in Verse vorbereiten und gegen den Digest bauen; Changelog-Text für Discord | CP: Impressions, CTR A/B, Plays. AD: Funnel `egg_first_hatch` → `fuse_1` → `fuse_2` (Drop-off?) |
+| **2** | Sa 12.12. | Wochenend-Modifikator W1 „Doppelte Kerne“ (Sa–So, kostenlos, für alle) | **Hotfix 1 einreichen**, falls nötig (Review-Dauer unbekannt). Clip 3. 30 min öffentlich mitspielen und beobachten | Tagesbericht: erster D1-Wert der Kohorte vom Tag 0 | **D1 (Kohorte Tag 0)**, Ø-Minuten pro Spieler, CTR je Variante |
+| **3** | So 13.12. | Wochenend-Modifikator W1, Ende 23:59 UTC | Clip 4. Discord: erste „Zeig deinen Hybriden“-Galerie | Balancing-Analyse aus AD: Wo brechen Spieler ab (Welle X, Boss)? Vorschlag für Werte-Anpassung (nur Daten-Tabelle) | D1 Tag 1, Peak-CCU Wochenende, Click→Play |
 | **4** | Mo 14.12. | Normalbetrieb | **Zwischenbilanz Tag 4:** KPI-Ampel. Bei Rot → Maßnahmen aus Abschnitt 6. Clip 5 | KPI-Ampel-Bericht, Abweichungen erklären (Plattform-Split aus CP falls vorhanden) | Alle KPIs, 4-Tage-Trend |
 | **5** | Di 15.12. | Normalbetrieb | A/B Runde 1 auswerten (Regel 2.4), sonst weiterlaufen lassen bis Mi. Clip-Variante 1b | Thumbnail-Log aktualisieren; ggf. Hotfix 2 vorbereiten (Balancing aus Tag 3) | CTR A vs. B, Impressions je Variante |
 | **6** | Mi 16.12. | Letzter Tag Woche 1 | **Hotfix 2 einreichen** (letzte Chance vor Winterfest und Feiertagen). A/B Runde 1 beenden → G1. **Variante C** vorbereiten bzw. hochladen | Hotfix-2-Build prüfen: Zeit-Unlocks für Woche 2–8 ein letztes Mal im Test-Offset | D7 ist noch nicht verfügbar. D1-Trend über die Kohorten Tag 0–4 |
-| **7** | Do 17.12. | **Winterfest-Block:** Frost-Ei, Winter-Accessoires, Winter-Boss-Skin, Code `FROST26` | A/B Runde 2 starten (G1 vs. C). Discord-Ankündigung, Clip „Frost-Fusion“ (Variante von Clip 1 mit Winter-Kreatur) | Kontrolle nach dem Unlock (00:00 UTC): Ist das Event wirklich live? Code-Test mit Luis' Account | **D7 (Kohorte Tag 0)** ab Tag 7/8. CCU-Sprung durch Winterfest? |
-| **8** | Fr 18.12. | Winter-Wochenend-Event (kostenlos) | Clip 2b (Winter-Roulette). Discord-Event „Boss-Abend“ Fr 19 Uhr MEZ: alle auf einen Server (Party-Joins) | Tagesbericht mit D7 | D7, Ø-Spielzeit, Favoriten und Recommends |
-| **9** | Sa 19.12. | Winter-Wochenende, **Ferienbeginn in vielen Ländern (ESTIMATED)** | Mitspielen zur Stoßzeit, Clip 3b. Moderation im Discord | Beobachtung CCU stündlich (Stoßzeiten nach Region für den Posting-Plan) | Peak-CCU, Stunden-Kurve |
-| **10** | So 20.12. | Winter-Wochenende | Ruhetag (nur Discord-Blick 2× täglich) | Wochenbericht Woche 1+ (Tag 0–10): KPI gegen Schwellen, Empfehlung | Alle KPIs |
+| **7** | Do 17.12. | **W2 Winterfest I „Frostfusion“:** Frost-Ei (5 Frosti-Formen), Frost-König Kabelsalat, Codes `FROSTFUSION`, `SCHNEEBALL` | A/B Runde 2 starten (G1 vs. C). Discord-Ankündigung, Clip „Frost-Fusion“ (Variante von Clip 1 mit Winter-Kreatur) | Kontrolle nach dem Unlock (00:00 UTC): Ist das Event wirklich live? Code-Test mit Luis' Account | **D7 (Kohorte Tag 0)** ab Tag 7/8. CCU-Sprung durch Winterfest? |
+| **8** | Fr 18.12. | Normalbetrieb W2 (Wochenend-Modifikator „Boss alle 5 min“ ab Sa 00:00 UTC) | Clip 2b (Winter-Roulette). Discord-Event „Boss-Abend“ Fr 19 Uhr MEZ: alle auf einen Server (Party-Joins) | Tagesbericht mit D7 | D7, Ø-Spielzeit, Favoriten und Recommends |
+| **9** | Sa 19.12. | Wochenend-Modifikator W2, **Ferienbeginn in vielen Ländern (ESTIMATED)** | Mitspielen zur Stoßzeit, Clip 3b. Moderation im Discord | Beobachtung CCU stündlich (Stoßzeiten nach Region für den Posting-Plan) | Peak-CCU, Stunden-Kurve |
+| **10** | So 20.12. | Wochenend-Modifikator W2, Ende 23:59 UTC | Ruhetag (nur Discord-Blick 2× täglich) | Wochenbericht Woche 1+ (Tag 0–10): KPI gegen Schwellen, Empfehlung | Alle KPIs |
 | **11** | Mo 21.12. | Normalbetrieb Winter | Entscheidung auf Basis des Wochenberichts (Abschnitt 6). Bei Bedarf Titel-Wechsel an **derselben** Insel vorbereiten (nur Metadaten) | Metadaten-Varianten vorbereiten, falls CTR rot | CTR gegen Retention: Welches Problem dominiert? |
 | **12** | Di 22.12. | Normalbetrieb Winter | Clip „Best of Community-Hybride“ (nur mit Erlaubnis der Spieler, Namen im Spiel ausblenden) | Code-Liste Woche 3 im Discord-Entwurf vorbereiten | Discover-Test läuft aus (≈Tag 14) |
 | **13** | Mi 23.12. | Letzter Tag vor dem Weihnachtsblock | **Bilanz des Discover-Testfensters:** weiter wie geplant, nachsteuern oder Abbruch-Modus (Abschnitt 6). Ab jetzt keine Publishes bis ≈5.1. | Abschlussbericht Tag 0–13 inkl. Kohorten-Tabelle, A/B-Log, Top-5-Bugs, Empfehlung für das Januar-Update | Alle KPIs, Retentionskurve Kohorten |
@@ -332,24 +339,25 @@ Laut Doku liefert die API: Peak-CCU, Unique Players, Plays, Minutes Played, Minu
 
 ## 5. Update-Plan: die ersten 8 Updates auf dem zeitgesteuerten Kalender
 
-**Grundsatz:** Die 8 „Updates“ sind **Content-Freischaltungen aus dem Release-Build**, jeweils donnerstags 00:00 UTC (≈ 01:00 MEZ). Echte Publishes gibt es nur für Hotfixes, Balance und als Rückfall, falls die Zeit-API fehlt. Jede Woche folgt demselben Muster: neuer Inhalt am Donnerstag, kostenloses Wochenend-Event Fr–So, 2 Codes (Do und Sa).
+**Grundsatz:** Die 8 „Updates“ sind **Content-Freischaltungen aus dem Release-Build**, jeweils donnerstags 00:00 UTC (≈ 01:00 MEZ). Echte Publishes gibt es nur für Hotfixes, Balance und als Rückfall, falls die Zeit-API fehlt. Jede Woche folgt demselben Muster: neuer Inhalt am Donnerstag, kostenloser **Wochenend-Modifikator Sa–So (UTC)**, 2 Codes der Woche (beide ab Do gültig, je 21 Tage; Luis postet den zweiten am Sa). **Maßgeblich sind GDD 7.2 (Codes) und GDD 7.4 (Inhalte);** die Tabelle unten ist die Posting-Sicht darauf.
 
 **Technische Voraussetzung (Gate aus dem Bericht):** eine verlässliche serverseitige Wanduhr-Zeit in Verse, **UNVERIFIED**. Luis bzw. CC prüft das in Woche 1 der Entwicklung im Digest.
 - **Fall A (Zeit-API vorhanden):** Alle Codes und Unlocks liegen als Datentabelle `live_calendar.verse` im Build, mit Start und Ende in UTC. Es sind keine Publishes nötig.
 - **Fall B (keine Zeit-API):** Jeder Wochen-Block braucht einen kleinen Publish, der ein Flag umschaltet, also **8 Publishes**. Die Publishes über die Feiertage (Woche 2–4) müssen dann **schon vor dem 17.12.** eingereicht sein. Das ist realistisch nicht sicher planbar (ESTIMATED). In Fall B deshalb den Winter-Block schon im Launch-Build **von Tag 0 an** aktiv lassen und im Januar per Publish umschalten.
 
-| Update | Zeitraum | Inhalt (vorproduziert) | Codes (vorab gebacken, Beispiele) | Thumbnail/Metadaten | Publish nötig? |
-|---|---|---|---|---|---|
-| **U1 Launch** | Do 10.12. – Mi 16.12. | 8 Grundarten; Fusion der Woche #1 (Bonus-Index-Eintrag); Wochenend-Event „Doppel-Brut“ | `FUSE1` (Launch), `HYBRID` (Sa 12.12.) | A/B Runde 1 | **Ja, bis zu 2 Hotfixes** (12.12. und 16.12.) |
-| **U2 Winterfest** | Do 17.12. – Mi 23.12. | Frost-Ei (neue Event-Art, 3 Teile = Kopf, Körper, Accessoire), Winter-Accessoires für alle Arten, Winter-Skin des Server-Bosses, Schnee-Deko auf den Plots | `FROST26`, `SNOWFUSE` | A/B Runde 2 (G1 vs. C) | Nein |
-| **U3 Weihnachten** | Do 24.12. – Mi 30.12. | „Geschenk-Wellen“ (Wellenmodus mit Geschenk-Gegnern, kostenlose Belohnungen **nur durchs Spielen**), Login-Geschenk am 24.–26.12. | `GIFTROT`, `CANDY` | wie U2 | Nein |
-| **U4 Silvester** | Do 31.12. – Mi 6.1. | „Feuerwerks-Boss“ (Boss-Variante mit Feuerwerk-VFX), Countdown-Event am 31.12. um 23:00 UTC (1 h, Boss mit doppelten Leben für alle Server) | `NEWYEAR27`, `BOOM` | C bis Di 5.1., dann raus | Nein. Plan: Mi 6.1. Winter-Assets per Zeit-Flag aus |
-| **U5 Januar-Ei** | Do 7.1. – Mi 13.1. | Neue Art „Januar-Ei“ (3 Teile) als erste dauerhafte Erweiterung des Index; Winter-Ei nicht mehr erhältlich (bereits geschlüpfte Kreaturen bleiben!) | `JANEGG`, `FUSE2027` | A/B Runde 3 (G1 vs. D) | **Optional:** 1 Balance-Publish nach der Feiertagsauswertung (einreichen Mo 4.1.) |
-| **U6 Boss-Rush** | Do 14.1. – Mi 20.1. | Boss-Rush-Modus: 3 Bosse hintereinander, Server-Bestenliste pro Session; neuer Titel-Rahmen (Kosmetik) fürs Plot-Schild | `RUSH`, `BIGBOSS` | Runde 3 läuft | Nein |
-| **U7 Index-Jagd** | Do 21.1. – Mi 27.1. | „Geheime Fusionen“: 10 versteckte Kombinationen mit Hinweisen (eine pro Tag bis Wochenende, Hinweistext im Spiel), Index-Rahmen für 25/50/75 % | `SECRET1`, `HINTS` | Runde 3 → G2 | Nein |
-| **U8 Finale** | Do 28.1. – Mi 3.2. | Rebirth-Stufe erweitert, „Hall of Fusions“ (Lobby-Statue mit dem Server-Top-Hybriden), Abschluss-Event-Wochenende | `FINALE`, `THANKS` | Runde 4 (G2 vs. E) | **Ja, das Folge-Update** (siehe unten) |
+| Update | Zeitraum | Inhalt (vorproduziert, GDD 7.4) | Codes (GDD 7.2, im Build) | Wochenend-Modifikator (Sa–So) | Thumbnail/Metadaten | Publish nötig? |
+|---|---|---|---|---|---|---|
+| **U1 W1 Frisch geschlüpft** | Do 10.12. – Mi 16.12. | Gründer-Ei, 5 Gründer-Formen, Banner „Gründer 2026“ | `HALLOHASKE` (dauerhaft), `FUSEFUN` | Doppelte Kerne | A/B Runde 1 | **Ja, bis zu 2 Hotfixes** (12.12. und 16.12.) |
+| **U2 W2 Winterfest I: Frostfusion** | Do 17.12. – Mi 23.12. | Frost-Ei, 5 Frosti-Formen, Frost-König Kabelsalat, Pad-Farbe Eisblau | `FROSTFUSION`, `SCHNEEBALL` | Boss alle 5 statt 7 min | A/B Runde 2 (G1 vs. C) | Nein |
+| **U3 W3 Winterfest II: Geschenke-Sturm** | Do 24.12. – Mi 30.12. | Paket-Ei, **Bonus-Art Paketeulo** (5 Seltenheiten; falls Bonus-Arten gestrichen: Event-Form auf Bzzkoffro, Bauplan M6-02b), Mikrowellora mit Geschenkpapier, Plot-Deko Geschenkestapel | `PAKETPOST`, `GESCHENK24` | +50 % Boss-Eier | wie U2 | Nein |
+| **U4 W4 Funkenregen** | Do 31.12. – Mi 6.1. | Funken-Ei, 5 Funki-Formen, Staubsauger-Baron mit Funken-Umhang, Titel „Silvester-Smasher“ (keine Böllergeräusche) | `FUNKEN2027`, `REZEPTEINS` | Resonanz 20 % → 30 % | C bis Di 5.1., dann raus | Nein |
+| **U5 W5 Schleim-Invasion** | Do 7.1. – Mi 13.1. | Schleim-Ei, 5 Schleimi-Formen, Schleim-Mikrowellora, Pad-Farbe Glibbergrün | `GLIBBGLIBB`, `SCHLEIMBOSS` | Alle Gegner Ploppblasen (+50 % Kerne) | A/B Runde 3 (G1 vs. D) | **Optional:** 1 Balance-Publish nach der Feiertagsauswertung (einreichen Mo 4.1.) |
+| **U6 W6 Disko-Fieber** | Do 14.1. – Mi 20.1. | Bass-Ei, **Bonus-Art Bassotto** (falls gestrichen: Event-Form auf Diskolama, Bauplan M6-02b), König Kabelsalat „Disco-Remix“, Plot-Musik-Remix | `BASSDROP`, `DISKOLAMA` | Hype-Fenster +30 % | Runde 3 läuft | Nein |
+| **U7 W7 Kosmos-Woche** | Do 21.1. – Mi 27.1. | Kosmos-Ei, 5 Kosmi-Formen (5. = Geheim-Form), Meteor-Staubsauger-Baron, Himmel-Deko Sternschnuppen | `STERNSTAUB`, `KOSMOWAL` | Geheim-Quote ×2 | Runde 3 → G2 | Nein |
+| **U8 W8 Fusions-Festival** | Do 28.1. – Mi 3.2. | Festival-Ei, 5 Festi-Formen, **Boss-Parade** (3 Bosse nacheinander), Titel „Festival-Legende“ | `FESTIVAL`, `REZEPTZWEI` | Alle Geheim-Rezept-Hinweise sichtbar (8 Rezepte, GDD 4.8) | Runde 4 (G2 vs. E) | **Ja, das Folge-Update** (siehe unten) |
+| ab Do 4.2. | Rotation | W2–W8 im Wechsel als „Rückkehr-Woche“ (GDD 7.4) | alte Codes abgelaufen (außer `HALLOHASKE`) | wie Rotationswoche | – | Nein |
 
-**Joker-Codes:** 4 zusätzliche Codes sind ab Tag 0 gültig, werden aber geheim gehalten (zum Beispiel `JOKER-A`–`D`, echte Codes sechsstellig und nicht erratbar). Luis gibt sie bei Meilensteinen im Discord und auf TikTok frei, etwa bei 1.000 Favoriten, 100 Discord-Mitgliedern oder zu Weihnachten. So entstehen „Live“-Momente ohne Publish. **Code-Belohnungen:** nur Spielinhalte (Eier, Kosmetik, Brut-Beschleuniger). Nie etwas, das es auch gegen V-Bucks gibt, damit keine Verwechslung mit IIT entsteht (ESTIMATED).
+**Joker-Codes entfallen** (Bauplan P-08): Der Build kennt nur die 16 Codes aus GDD 7.2. „Live-Momente“ bei Meilensteinen (1.000 Favoriten, 100 Discord-Mitglieder) entstehen über Ankündigungen von Event-Inhalten, nicht über zusätzliche Codes. **Code-Belohnungen:** nur Spielinhalte (Einkommen, Kerne, Eier, Tokens, Kosmetik), nie etwas, das es auch gegen V-Bucks gibt (ESTIMATED).
 
 **Kleine Publishes, die trotzdem nötig sind:**
 
@@ -390,11 +398,11 @@ Benchmarks: Genre Simulation & Tycoon mit **Median D1 12–13 %, D7 4–5 %** un
 | **CTR** Warnung | Thumbnail unklar klein, Titel generisch, Motiv verwechselbar | (1) A/B-Runde vorziehen: Gewinner gegen eine Variante mit **größerem Hybriden und weniger Elementen** (nur 1 Figur und Blitz). (2) Kleinheitstest wiederholen. (3) Titel-Alternative vorbereiten (nur Metadaten, gleiche Insel) | Luis Krita 2 h; CC: Variantenliste. Innerhalb von 48 h |
 | **CTR** Abbruch | Branding erreicht niemanden | Titel und Thumbnail auf die zweite Stufe umbauen: „BRAINROT FUSION LAB“ oder eine Richtung aus dem GDD. Ein Wechsel zu „Creature-Fusion“ ohne „Brainrot“ nur, wenn die Brainrot-Maps insgesamt eingebrochen sind (Bericht A3) | Luis. Vor Tag 14 |
 | **Click → Play** Warnung | Ladezeit, Matchmaking, Einstieg verwirrt oder Thumbnail verspricht etwas anderes (Bounce) | (1) Prüfen, ob Thumbnail B (Boss) Erwartungen weckt, die der Einstieg nicht erfüllt. Dann A bevorzugen. (2) Die ersten 30 s: Ei sofort in der Hand, kein Menü vorab. (3) Speicher und Ladezeit prüfen (Launch Memory Calculation) | CC: Einstiegs-Patch vorbereiten. Hotfix-Fenster nutzen |
-| **Ø-Spielzeit** Warnung | Zu wenig Ziele nach der ersten Fusion, Welle 1 zu schwer oder zu leicht | (1) AD-Funnel: Wo endet die Session? (2) Balancing-Tabelle anpassen: Brutzeiten in Minute 5–20 verkürzen, erste Welle leichter, Boss früher sichtbar. (3) Mit „Fusion der Woche“ ein klares nächstes Ziel im HUD zeigen | CC Balancing, Luis Test. Hotfix 2 (16.12.) |
+| **Ø-Spielzeit** Warnung | Zu wenig Ziele nach der ersten Fusion, Welle 1 zu schwer oder zu leicht | (1) AD-Funnel: Wo endet die Session? (2) Balancing-Tabelle anpassen: Brutzeiten in Minute 5–20 verkürzen, erste Welle leichter, Boss früher sichtbar. (3) Das HUD-Feld „Nächstes Ziel“ (GDD 7.6) schärfen | CC Balancing, Luis Test. Hotfix 2 (16.12.) |
 | **Ø-Spielzeit** Abbruch (< 20 min) | Kern trägt nicht | **Abbruch-Modus:** keine neuen Inhalte mehr bauen. Metadaten-Umbau (siehe CTR-Abbruch) und nur noch minimal pflegen. Zeit in Fish- oder Fight-Hybrid-Rückfallkonzept als **neues** eigenständiges Spiel stecken (kein Duplikat) | Luis entscheidet Tag 13 |
-| **D1** Warnung | Kein Grund zur Rückkehr | (1) Brutzeit-Hook: Ein Ei, das „morgen“ schlüpft, wird am Sessionende sichtbar angeboten (Voraussetzung Zeit-API). (2) Joker-Code am Folgetag im Discord. (3) Sessionende zeigt das nächste Index-Ziel | CC: Patch für Hotfix 2 bzw. Januar |
+| **D1** Warnung | Kein Grund zur Rückkehr | (1) Brutzeit-Hook: Ein Ei, das „morgen“ schlüpft, wird am Sessionende sichtbar angeboten (Voraussetzung Zeit-API). (2) Nächsten Wochen-Code bzw. nächsten Event-Inhalt aus `docs/code_kalender.md` im Discord ankündigen. (3) Sessionende zeigt das nächste Index-Ziel | CC: Patch für Hotfix 2 bzw. Januar |
 | **D1** Abbruch (< 8 %) | wie oben, strukturell | Abbruch-Modus wie oben | Luis Tag 13 |
-| **D7** Warnung | Content-Wand nach 3–5 Tagen, Grind zu steil | Rebirth-Kosten −20 %, Index-Zwischenbelohnungen bei 10/25/50 %; U5-Inhalt (Januar-Ei) ist ohnehin fest eingeplant, eventuell per Balance-Publish am 4.1. früher freischalten | CC Balancing-Tabelle |
+| **D7** Warnung | Content-Wand nach 3–5 Tagen, Grind zu steil | Rebirth-Kosten −20 %, Index-Zwischenbelohnungen bei 10/25/50 %; U5-Inhalt (W5 Schleim-Invasion) ist ohnehin fest eingeplant; ein früheres Freischalten ist nicht vorgesehen (Kalender liegt im Build), Balance-Publish am 4.1. nur für Werte | CC Balancing-Tabelle |
 | **D7** Abbruch | Genre-untypisch schlecht | Keine neuen Inhalte über U8 hinaus. U9 fällt aus, der Kalender läuft aus | Luis |
 | **Peak-CCU** Warnung bei guter Retention | Reichweiten-Problem, keine Qualitätsfrage | (1) CTR-Maßnahmen. (2) Clip-Frequenz auf 2 pro Tag erhöhen, die 2 besten Clips (Aufrufe pro Stunde) variieren. (3) Cross-Promo (Abschnitt 7). (4) Sponsored Row **nicht** nutzen: Unter 18-Jährige sehen sie nicht, und die Zielgruppe ist überwiegend jung | Luis |
 | **Peak-CCU** Warnung bei schlechter Retention | Qualität | Zuerst Retention reparieren, keine Reichweite einkaufen | — |
@@ -413,7 +421,7 @@ Benchmarks: Genre Simulation & Tycoon mit **Median D1 12–13 %, D7 4–5 %** un
 - **Kanäle:**
   - `#regeln`: Regelwerk, Discords Mindestalter 13 nennen, kein Handel mit Accounts, keine V-Bucks-Giveaways
   - `#ankündigungen`: nur Luis
-  - `#codes`: nur Luis, die zwei Wochen-Codes plus Joker
+  - `#codes`: nur Luis, die zwei Wochen-Codes laut `docs/code_kalender.md` (GDD 7.2)
   - `#patchnotes`
   - `#bug-melden`: Forum-Kanal mit Vorlage (Plattform, was passiert, erwartet, Screenshot oder Clip, Uhrzeit UTC)
   - `#feedback-ideen` (Forum)
@@ -429,7 +437,7 @@ Benchmarks: Genre Simulation & Tycoon mit **Median D1 12–13 %, D7 4–5 %** un
   - Keine Altersabfrage, keine persönlichen Daten sammeln
 - **Rhythmus:**
   - Do 01:00 MEZ (Unlock): automatisch geplante Ankündigung mit Discords Nachrichtenplanung oder Bot, sonst Luis am Morgen
-  - Sa: zweiter Code
+  - Sa: zweiter Code der Woche posten (im Spiel schon ab Do gültig) + Hinweis auf den Wochenend-Modifikator
   - Fr 19 Uhr: „Boss-Abend“ als Discord-Event
 - **Einladungslink** in TikTok- und YouTube-Bio und auf dem Creator-Profil, falls dort verlinkbar (**UNVERIFIED**). **Nicht in der Insel**, weil externe Links bzw. Handlungsaufforderungen in der Insel **UNVERIFIED** sind. Nur den Creator-Namen zeigen.
 

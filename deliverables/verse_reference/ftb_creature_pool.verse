@@ -19,6 +19,11 @@ using { /UnrealEngine.com/Temporary/Diagnostics }
 
 PartsPerPad:int = 24          # 3 Slots × 8 Arten (Release 1)
 MaxLungesPerPlot:int = 3      # GDD §2.4.3 Serverlast
+# Einheitliche Anzeige-Skalierung (Blender-Kreatur 1,6–2,1 m -> GDD 1,8–2,4 m), Bauplan §5.2/M1-07.
+# ALLE Skalen (Lunge/Landen) sind DisplayScale × Faktor, ALLE Montage-Offsets × DisplayScale,
+# sonst schrumpft die Kreatur nach dem ersten Lunge auf 1,0 bzw. Kopf/Acc schweben.
+# Fallback, falls MoveTo mit Skalierung scheitert (Probe P3): DisplayScale = 1.0 setzen.
+DisplayScale:float = 1.15
 
 # Montage-Typ des Accessoires: 0 Rücken, 1 Hals (Körper), 2 Kopf-oben, 3 Gesicht (Kopf)
 AccMountType:[]int = array{0, 2, 1, 1, 3, 1, 0, 0, 0, 0}
@@ -107,8 +112,9 @@ ftb_plot_pool := class<concrete>:
     PlacePart(Pad:int, Slot:int, Species:int, PadT:transform, Local:vector3, Rarity:int):void =
         if (Prop := GetPart[Pad, Slot, Species]):
             # Lokal -> Welt: mit Pad-Rotation drehen. RotateVector: LIKELY
-            World := PadT.Translation + PadT.Rotation.RotateVector(Local)
+            World := PadT.Translation + PadT.Rotation.RotateVector(Local * DisplayScale)
             if (Prop.TeleportTo[World, PadT.Rotation]) {}   # TeleportTo[]: VERIFIED (failable)
+            # TeleportTo setzt keine Skalierung: der Aufrufer startet danach LandSquash (endet auf DisplayScale).
             # SetMaterial zur Laufzeit: LIKELY (GDD §4.2). Fallback: Aura-VFX am Pad.
             if (Mat := RarityMaterials[Rarity]):
                 Prop.SetMaterial(Mat)
@@ -131,9 +137,10 @@ ftb_plot_pool := class<concrete>:
 
     LungePart(Pad:int, Slot:int, Species:int, PadT:transform, Local:vector3, Fwd:vector3)<suspends>:void =
         if (Prop := GetPart[Pad, Slot, Species]):
-            Home := PadT.Translation + PadT.Rotation.RotateVector(Local)
-            Out := transform{Translation := Home + Fwd, Rotation := PadT.Rotation, Scale := vector3{X := 1.15, Y := 1.15, Z := 0.87}}
-            Back := transform{Translation := Home, Rotation := PadT.Rotation, Scale := vector3{X := 1.0, Y := 1.0, Z := 1.0}}
+            Home := PadT.Translation + PadT.Rotation.RotateVector(Local * DisplayScale)
+            D := DisplayScale
+            Out := transform{Translation := Home + Fwd, Rotation := PadT.Rotation, Scale := vector3{X := D * 1.15, Y := D * 1.15, Z := D * 0.87}}
+            Back := transform{Translation := Home, Rotation := PadT.Rotation, Scale := vector3{X := D, Y := D, Z := D}}
             Prop.MoveTo(Out, 0.25)
             Prop.MoveTo(Back, 0.25)
 
@@ -149,6 +156,7 @@ ftb_plot_pool := class<concrete>:
 
     SquashPart(Pad:int, Slot:int, Species:int, PadT:transform, Local:vector3, Sz:float)<suspends>:void =
         if (Prop := GetPart[Pad, Slot, Species]):
-            Home := PadT.Translation + PadT.Rotation.RotateVector(Local * Sz)
+            D := DisplayScale
+            Home := PadT.Translation + PadT.Rotation.RotateVector(Local * (Sz * D))
             Prop.MoveTo(transform{Translation := Home, Rotation := PadT.Rotation,
-                                  Scale := vector3{X := 2.0 - Sz, Y := 2.0 - Sz, Z := Sz}}, 0.11)
+                                  Scale := vector3{X := D * (2.0 - Sz), Y := D * (2.0 - Sz), Z := D * Sz}}, 0.11)

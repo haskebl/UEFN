@@ -261,3 +261,62 @@ Grundsätzlich eingehalten (P-01, E-024, Tests Sa 31.10./Sa 28.11.). Verletzt od
 
 ## Zusammenfassung Token-Effizienz
 Gute Grundlage (Generatoren, `log_check.py`, `_context`-Protokoll, Autoplay statt Mikrotest). Größte Hebel: R-14 (Checkpoints, kleinere Blöcke), R-24 (aufgabengenaues `sed`), R-25/R-26 (Digest-/WebFetch-Begrenzung), R-31 (Parameter aus `economy_sim.P` exportieren statt abtippen), R-01 (Sim-Overrides statt Skript-Umbauten im Einzelfall).
+
+---
+
+## Status der Umsetzung (29.09.2026, Plan-Version G1.1)
+
+Alle 48 Befunde sind bearbeitet. „Plan“ = `BAUPLAN_Claude_Code.md`. Geprüft: `python3 -m py_compile` auf alle `.py`; `economy_sim.py` ohne Overrides liefert byte-identisch dieselbe `economy_sim_output.csv` und dieselbe Konsolenausgabe (`--runs 10`) wie vorher.
+
+| ID | Status | Wo / Begründung |
+|---|---|---|
+| R-01 | behoben | `data/economy_sim.py`: `--set key=wert` (mehrfach, JSON-Werte, Schlüssel-/Typprüfung), `--params datei.json`, neuer Parameter `pads_max` (Standard 6; begrenzt auch Rebirth-Behalten), `--out`, `--dump-json`, `--show-params` (`--params` ohne Datei = alte Tabelle). Mit Overrides Ausgabe nach `research/sim/sim_<zeit>.csv`, Referenz-CSV wird nie überschrieben (Schutz eingebaut). Getestet: `--set pads_max=5` = `--set pad_costs=[150,3000,60000]`. `CLAUDE.md` §4, Plan M0.3 F2, M4-04, M1-01. Die vorgeschlagene Extra-Aufgabe in M1-01 entfällt, weil das Skript schon erweitert ist. |
+| R-02 | behoben | Plan M0-10 (`TestReportEnabled`), M3-08 (Menü-Knopf „TEST-REPORT“ bei `TestReportEnabled`, Code ab M5), M3-11, M4-01, M7-08, M8-01, M8-06; `playtests.md` Test 1; E-078 ersetzt E-073 |
+| R-03 | behoben | M1-12 → **M0-07b** (Muss-Termin bis Di 06.10., spätestens Mi 07.10. 18:00); `status.md` „Muss-Termine“; M1-Luis-Tabelle, M1-13, Anhang L, Q-MKT-4 |
+| R-04 | behoben | `CLAUDE.md` §0 „Shell“ (Git Bash, `cygpath`, `powershell.exe -NoProfile …`, Blender-/Python-Aufruf); Plan §2.2, §5.1, §6.4, M0-02, M0-04 (bash + PowerShell-Alternative), M0-07; E-086. M0-01a bleibt bewusst PowerShell, weil Luis dort selbst tippt (Hinweis im Schritt-Kopf) |
+| R-05 | behoben | `blender/materials_spec.md` §3a Knotengraph (Kernpfad Zeilen 1–15 ≈ 20 Rechenknoten, statt ≤ 15 wegen Phase-Kette; Zusatz Z1–Z3 optional; Fallback je Knoten); M0-03 Fähigkeit **C5b**; M0-08a Schritt 3. Verfügbarkeit der Knoten in UEFN als UNVERIFIED mit Probe P2/C5b markiert |
+| R-06 | behoben | M0-03 **C18**; Anhang A Tabelle **V01–V22** (Vorlage, Farbe, Burst, Lebensdauer, Größe, Verwendung); neue Aufgabe **M1-09b** (alle 22, Klickliste bei C18 = nein); `Portal` → M3-02; §5.7 verweist darauf. Vorlagennamen in UEFN UNVERIFIED (C18 notiert sie) |
+| R-07 | behoben | Neue Aufgabe **M0-07c** (Kapsel A39 als Gegner-Stellvertreter, Pad, Tile, Noise); **M0-08b** Schritt 7 `NS_FTB_Beam` (12.500 cm, CPU, 1,0 s); M0.1 `SimWaves`/`SimBeams`; M0-11a (6 Kapseln je Plot) |
+| R-08 | behoben | Bericht kopiert nach `deliverables/Recherchebericht_Phasen_A-E.md`; Plan-Kopf, M0-02 Schritt 2 (→ `research/bericht_marktanalyse.md`, `research_notes/…` mit Leerzeichen-Pfad), M0-05 Schritt 2/4 (Abschnitt „Nachprüfung aus offenem Netz“ + `grep`), M0.6, Anhang L; `entscheidungen.md` Quellen-Kürzel; Launch-Plan Quellenlage |
+| R-09 | behoben | **P-08** (Plan §1, E-076); `Launch_Plan_Phase_H.md` an GDD angeglichen: Abgleich-Hinweis oben, §4.3 (Tag 0/1/2/3/7/8/9/10), §5 Tabelle U1–U8 + Rotation (Codes/Inhalte/Modifikatoren laut GDD 7.2/7.4, Sa–So), Joker-Codes gestrichen (§5, §6 D1, §7.1); Plan M8-07 erzeugt `docs/code_kalender.md` aus `data/codes.csv` |
+| R-10 | behoben | M0-01b Schritt 6 (Ausweichtermin Fr 27.11. 17–21 Uhr oder So 29.11. 11–18:30, **ersetzt** den 28.11., kein dritter Termin); Q-REL-2; M8-01/M8-02/M8-03 (Go/No-Go spätestens Mo 30.11.); M8-05 fest am Tag nach dem Chapter-Start; M7-/M8-Luis-Tabellen, Anhang L, `playtests.md`, LP 4.1; E-075 |
+| R-11 | behoben | M0-08b Schritt 8 misst ΔNiagara, ΔWAV10, ΔIcon256, ΔMeshes_M0; M0-17 neue Formel mit ΣAudio ≈ 115 s und ΣTris_nichtKreatur ≈ 107.500; `budgets.md` Delta-Tabelle |
+| R-12 | behoben | §3 B9 an Variante gekoppelt (A ≤ 4.500 grün); M0.3 Schritt 1 Grün-Bedingung B9; M6-02b Bedingung (Variante ≠ A oder F1); `budgets.md` B9; E-080 |
+| R-13 | behoben | M6-02b: Maße Paketeulo/Bassotto, Ersatz-Zuordnung E3 → Bzzkoffro + `MI_FTB_Event_Paket`, E6 → Diskolama + `MI_FTB_Event_Bass` (neue MIs A88/A89, Werte `materials_spec.md` §5); §4.2 Form-Codes 1–9; `ftb_types.verse` Kommentar; E-081. Abweichung vom Vorschlag: statt Festi-Tint eigenes Paket-MI, damit Form 3 ↔ MI eindeutig ist |
+| R-14 | behoben | `CLAUDE.md` §2 (Block 1–2 Aufgaben / ≤ 3 h) + neuer §2a **Kontingent-Checkpoint** (`Laufend:`-Zeile + WIP-Commit nach jedem Schritt, Fortsetzen beim Start, idempotente Batches); `_context/README.md`, `status.md` (Abschnitt „Laufend“); Plan §1 (Sessions M0 10–12, M1 12–14, M3 14–16, M5 8–10, M6 10–12; Summe 84–102), §2.1, §7; E-084 |
+| R-15 | behoben | Geteilt: M0-01a/b, M0-08a/b, M0-11a/b, M1-04a/b, M1-06a/b, M2-05a/b, M3-05a/b, M6-02a/b, je mit eigener Abnahme; Abhängigkeiten nachgezogen. Menschen-Test-Termine M4-02/M8-02 bewusst ungeteilt (Termin, keine CC-Arbeit; Ausnahme in §2.1 genannt) |
+| R-16 | behoben | M0-16 Schritt 4 (Suche in `Assets.digest.verse`, Abh. M0-08b); §5.3 Absatz „Asset-Referenzen in Verse“ mit Fallback `@editable`; Q-TECH-15. Digest-Form UNVERIFIED mit Messprobe |
+| R-17 | behoben | M5-04 Formel (Raw 1-basiert, `2 + ((Raw − 9) mod 7)`); AT-M5-4 Sollwerte in M5-04 und Anhang T; stimmt mit `ftb_time.verse` `RotateWeek` überein; E-082 |
+| R-18 | behoben | M1-07 (`DisplayScale`, Offsets × Scale, LandSquash nach ShowCreature, AT-Prüfung 10 Lunges); `verse_reference/ftb_creature_pool.verse` Konstante + alle Skalen/Offsets angepasst; §5.2; `blender/README.md`, `verse_reference/README.md` |
+| R-19 | behoben | §5.4 Parameterliste → Namen laut `materials_spec.md` §3; §3 dort um `PhaseGridCm` ergänzt, `StarfieldColorA/B`, `RainbowShimmer`, `DitherOpacity` erklärt; E-077 ersetzt E-064 (4 cm / 0,8 Hz); `materials_spec.md` §6 Palette verbindlich UserInterface2D/keine Mips/Nearest; Symbole einheitlich 128² (§5.5) |
+| R-20 | behoben | M0-07 Schritt 3 (`cp` nach `data/` und `art_src/`); M0-07c Schritt 2 `tools/gen_ui_tex.py --noise`; §6.1 Baum |
+| R-21 | behoben | `blender/export_fbx.py`: LODs in eigenen Ordner (`--lod-out`, Standard `<out>_lod`), Manifest mit relativem Pfad; M0-07 `--lods` nur bei C6 = nein; §5.2 LOD, §5.3 Fallback 2 (nur 24 Dateien); `blender/README.md` |
+| R-22 | behoben | M0-02 Schritt 4 (`log_check.py` mit Standardpfad + `--log`, Exit 2 statt Traceback), Schritt 6 (`dev` + `spike/m0`), Abnahme; `CLAUDE.md` §7.4 (M0 → `spike/m0`, sonst `dev`); M0-17 Merge-Befehl |
+| R-23 | behoben | M0-03 Schritt 5 (Device-Asset-Pfade D01–D19 in `mcp_werkzeuge.md`); M0-09 nutzt eigene Graybox-Meshes `SM_FTB_Pad`/`SM_FTB_Tile` (A67 neu) aus M0-07c |
+| R-24 | behoben | `CLAUDE.md` §1.3 (aufgabengenaues `sed`, Meilenstein-Kopf nur in der ersten Session, M0.1–M0.3 nur M0-10…17), §7.1 (nächste Aufgabe mit Zeilennummer); Plan-Kopf; `status.md` |
+| R-25 | behoben | M0-04 Schritt 2 (Ausgabe nach `logs/digest_<gruppe>.txt`, nur `wc -l` + `head -25`, engere Muster für tag/entity/camera) |
+| R-26 | behoben | M0-05 Schritt 4 (max. 5 WebFetches, enger Prompt) |
+| R-27 | behoben | `playtests.md` Test 1 und M4-01 (freiwilliges Ende, max. 60 min; Zeiten angepasst, Termin bleibt 13–16 Uhr); M4-03 + `playtests.md` Hinweis: GDD-5.9-Regel erst nach Launch per Analytics |
+| R-28 | behoben | M0-01b Schritt 3 (eigenes Android-Gerät); M3-11 10-min-Touch-Rauchtest (+ Layout-Check ohne Gerät); §2.3 M; M7-03 und M7-Luis ohne Tester-Fallback; Q-TECH-14 |
+| R-29 | behoben | P-01 erweitert (Plan §1), E-075; LP 4.1/4.2 (Blindtest gestrichen, Messplan optional, Rückkehr-Kriterium nur Info); M8-03; `playtests.md` Go/No-Go-Kopf |
+| R-30 | behoben | M5-04 (Umtausch beim ersten Join nach Wochenwechsel, `LastEventWeekSeen < EventWeek`); M7-05; Anhang T AT-M7-5; E-082 |
+| R-31 | behoben | M1-01 Schritt 1 (`--dump-json` statt Abtippen, GDD nur per `--check`), Schritt 3 (`gen_golden.py` importiert `economy_sim.py`, `--scenario m1_10min` mit festem Kauf-Plan → `GoldenM1Coins600`); M1-06b Abnahme; §4.1 |
+| R-32 | behoben | Anhang D: D07 (+2.000, −600), D16 (+2.000, +600, Höhe 350), Besuchs-Ziel (+2.300, 0) Blick −X; M1-04b, M2-09 |
+| R-33 | behoben | `CLAUDE.md` §3 (Versionsvergleich, M8-05 als erste Aufgabe, `api_digest.md` nachziehen); M8-05 Schritte 1–5 |
+| R-34 | behoben | Einheitlich **< 45.000** (grün) in M0.3 S2, M6-02b, Anhang A A25–A30; E-080. Begründung: strenger als GDD 4.1 „< 50 %“, verletzt das GDD also nicht, und vermeidet Bonus-Arten bei B1 gelb |
+| R-35 | behoben | M3-07 Schritt 0 (3 Kandidaten je Zustand, Klickliste, Standard Kandidat 1 nach Frist); Q-AUD-3; M3-Luis-Tabelle (+10 min), Anhang L |
+| R-36 | behoben | Anhang T: `AutoTest = 200` (Regression) und `201` (Kurzlauf) definiert; M4-08, M5-08, M6-09 → 200; M7-08, M8-04, M8-05 → 201 |
+| R-37 | behoben | §3 B16 Messmethode „AT-M5-7 (37), vorher AT-M0-94 (94)“; `budgets.md` B16 |
+| R-38 | behoben | Anhang A **A165** `A_FTB_UI_Metronome`; M3-03; Anhang D D14 = 32, Summe 250, Audio-Player 66 ≤ 70 (B19) |
+| R-39 | behoben | M2-07 Abh. (M2-Luis Kokoro-Installation, M2-01), Schritt 1 Aufruf mit `/c/FTB_tts/Scripts/python.exe` |
+| R-40 | behoben | M2-07 Schritt 2 zweistufig (`volumedetect` → `volume`), Abnahme über `levels.csv`; M6-05 Vox ebenso; Musik bleibt `loudnorm=I=-18`; §5.6 |
+| R-41 | behoben | M0-01 auf 3 h gesamt, wegen der 2-h-Regel geteilt in M0-01a/M0-01b (je 1,5 h); Blender fest per `download.blender.org/release/Blender4.2/` (neueste 4.2.x-MSI) |
+| R-42 | behoben | M0-02, M0-09, M0-16 als [CC+Luis] mit markiertem Luis-Schritt (je 5 min); M0.6 und Anhang L ergänzt |
+| R-43 | behoben | M1-04a Assets A38–A44, A46–A48 (A45 → M3-01, A49 → M6-06; Anhang A aufgeteilt); M2-09 D16 „vorhanden aus M1-04b, nur Text-Logik“ |
+| R-44 | behoben | M1-11 legt `TutorialStep:int = 0` direkt an; M5-07 streicht es aus der Ergänzungsliste |
+| R-45 | behoben | M3-05b Schritt 3 (Ring 2.000–3.000 in xy, Abnahme mit Grenzwerten); Referenz `ftb_combat.verse` korrigiert (`HypeZoneInner`, xy-Abstand) statt nur als abweichend markiert; `verse_reference/README.md`; E-085 |
+| R-46 | behoben | M3-05a Schritt 5 (Beitritt ≤ 45 s → Faktor 1,0); AT-M3-4 in M3-05a und Anhang T |
+| R-47 | behoben | `budgets.md` Spalte M4 (alle 21 Zeilen); Ersatztitel „FUSE THE BRAINROTS!“ (E-040) in LP 1.2 übernommen, E-079; M8-07 |
+| R-48 | behoben | M2-09 API-Fallback (statischer Text per Property C3, dynamische Infos nur in S15); Anhang D D16 Fallback-Spalte |
+
+**Bewusst offen / nicht verifizierbar:** Alle neuen UEFN-Werte (Niagara-Vorlagennamen, Material-Knoten-Verfügbarkeit, `Assets.digest.verse`-Form, Logpfad, Device-Asset-Pfade) sind als UNVERIFIED mit Messprobe (C5b, C18, M0-16 Schritt 4, M0-03 Schritt 5) und Fallback eingetragen, nicht als Fakten. `gen_golden.py`, `gen_ui_tex.py`, `gen_misc_meshes.py`, `gen_thumbs.py`, `log_check.py` existieren weiterhin nur als Aufgaben im Plan (werden von Claude Code in M0/M1 geschrieben).

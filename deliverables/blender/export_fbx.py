@@ -7,7 +7,12 @@
 # dazu manifest.json (Name, Tris, Bounds, Sockel, Datei).
 #
 # Aufruf:
-#   blender -b ./ftb_out/ftb_species_parts.blend -P export_fbx.py -- --out ./ftb_out/fbx [--rotate-z 0] [--prefix SM_FTB_]
+#   blender -b ./ftb_out/ftb_species_parts.blend -P export_fbx.py -- --out ./ftb_out/fbx [--rotate-z 0] [--prefix SM_FTB_] [--lod-out <ordner>]
+#
+# LOD-Dateien (*_LOD1/_LOD2, nur falls gen_species_parts.py mit --lods lief) landen
+# NICHT in --out, sondern in --lod-out (Standard: Geschwisterordner "<out>_lod",
+# z. B. blender/out/fbx_lod). So importiert "ganzen Ordner blender/out/fbx ziehen"
+# genau die 24 LOD0-Meshes und keine 48 LOD-Dateien als eigene Assets.
 #
 # Export-Einstellungen (bewusst, bitte nicht "optimieren" ohne Test in UEFN):
 #   axis_forward = '-Z', axis_up = 'Y'   Blender-FBX-Standard; UEFN-Importer mit
@@ -66,7 +71,11 @@ def parse_args():
     ap.add_argument("--out", default="./ftb_out/fbx")
     ap.add_argument("--prefix", default="SM_FTB_")
     ap.add_argument("--rotate-z", type=float, default=0.0, help="Grad, vor dem Export angewendet")
-    return ap.parse_args(argv)
+    ap.add_argument("--lod-out", default="", help="Zielordner fuer *_LOD1/_LOD2 (Standard: <out>_lod)")
+    args = ap.parse_args(argv)
+    if not args.lod_out:
+        args.lod_out = os.path.normpath(args.out).rstrip("/\\") + "_lod"
+    return args
 
 
 def tri_count(obj):
@@ -126,15 +135,18 @@ def main():
             c.select_set(True)
         bpy.context.view_layer.objects.active = obj
         bpy.context.view_layer.update()
-        path = os.path.join(args.out, obj.name + ".fbx")
+        is_lod = "_LOD" in obj.name
+        target = args.lod_out if is_lod else args.out
+        os.makedirs(target, exist_ok=True)
+        path = os.path.join(target, obj.name + ".fbx")
         bpy.ops.export_scene.fbx(filepath=os.path.abspath(path), **FBX_SETTINGS)
         manifest["meshes"].append({
             "name": obj.name,
-            "file": os.path.basename(path),
+            "file": os.path.relpath(path, args.out).replace("\\", "/"),
             "tris": tri_count(obj),
             "bounds_cm": bounds_cm(obj),
             "sockets_cm": {c.name: [round(x, 2) for x in c.location] for c in sockets},
-            "is_lod": "_LOD" in obj.name,
+            "is_lod": is_lod,
         })
         obj.matrix_world = saved
         for c in sockets:

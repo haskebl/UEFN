@@ -21,7 +21,8 @@ LatencyComp:float = 0.1         # +100 ms auf den Zielzeitpunkt (serverseitig)
 PerfectWindow:float = 0.15      # ±150 ms (Messung W4: ggf. 0,25)
 GoodWindow:float = 0.35         # ±350 ms (Messung W4: ggf. 0,50)
 HubCenter:vector3 = vector3{X := 0.0, Y := 0.0, Z := 0.0}
-HypeZoneRadius:float = 3000.0   # Hub-Arena-Ring r ≤ 30 m (GDD §11 Layout)
+HypeZoneRadius:float = 3000.0   # Außenradius Hype-Zone-Ring (GDD §2.4.4/§11)
+HypeZoneInner:float = 2000.0    # Innenradius: Ring r = 2.000–3.000 (Bauplan M3-05), NICHT die Scheibe
 
 # --------------------------- Formeln ---------------------------------
 WaveStrength(W:int)<transacts>:float =
@@ -185,8 +186,13 @@ ftb_boss_director := class:
         set MaxHP = Max(1.0, 60.0 * Sum)
         set HP = MaxHP * Ratio
 
+    # Ring in der xy-Ebene: 2.000 ≤ Abstand ≤ 3.000 (Höhe egal, Boss-Landekreis r = 1.500 zählt nicht).
     InHypeZone(P:player)<transacts>:logic =
-        if (Ch := P.GetFortCharacter[], Distance(Ch.GetTransform().Translation, HubCenter) <= HypeZoneRadius) then true else false
+        if (Ch := P.GetFortCharacter[]):
+            D := Ch.GetTransform().Translation - HubCenter
+            Dxy := Sqrt(D.X * D.X + D.Y * D.Y)
+            if (Dxy >= HypeZoneInner and Dxy <= HypeZoneRadius) then true else false
+        else false
 
     Run(Tracker:ftb_hype_tracker, Players:[]ftb_player_state)<suspends>:boss_outcome =
         Start := GetSimulationElapsedTime()

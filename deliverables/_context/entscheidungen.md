@@ -1,7 +1,7 @@
 # Entscheidungen (nur anhängen)
 
 Format: `| ID | Datum | Entscheidung | Grund / Messwert | Quelle |`
-Quellen-Kürzel: **Bericht** = `reports/Brainrot Map Marktanalyse UEFN.md` · **RT** = `research/red_team_review.md` · **Feas** = `research/uefn_feasibility.md` · **GDD** = `docs/GDD_Fuse_and_Fight.md` · **LP** = `docs/Launch_Plan_Phase_H.md` · **Plan** = `docs/BAUPLAN_Claude_Code.md` · **Luis** = Vorgabe von Luis.
+Quellen-Kürzel: **Bericht** = `research/bericht_marktanalyse.md` (Paket: `deliverables/Recherchebericht_Phasen_A-E.md`, Original `reports/Brainrot Map Marktanalyse UEFN.md`) · **RT** = `research/red_team_review.md` · **Feas** = `research/uefn_feasibility.md` · **GDD** = `docs/GDD_Fuse_and_Fight.md` · **LP** = `docs/Launch_Plan_Phase_H.md` · **Plan** = `docs/BAUPLAN_Claude_Code.md` · **Luis** = Vorgabe von Luis.
 
 ## A. Recherche-Ergebnisse (Stand 29.09.2026, alle Zahlen aus Such-Snippets, nicht gemessen)
 | ID | Datum | Entscheidung / Befund | Grund / Messwert | Quelle |
@@ -66,6 +66,18 @@ Quellen-Kürzel: **Bericht** = `reports/Brainrot Map Marktanalyse UEFN.md` · **
 | E-072 | 2026-09-29 | Musik primär aus UEFN-Bibliothek (kein eigener Speicher), eigene LMMS-Musik optional | Speicher, Aufwand | Plan §5.6 |
 | E-073 | 2026-09-29 | Test-Report per Geheim-Code `TESTREPORT` für private Versionen (dort keine Logs lesbar) | Messbarkeit Test 1/2 | Plan M3-08 |
 | E-074 | 2026-09-29 | Git: `main` + `dev`, kein Feature-Branching (Binärdateien), LFS für uasset/umap/fbx/wav/png; UEFN-Revision-Control aus | Solo-Projekt | Plan §6 |
+| E-075 | 2026-09-29 | P-01 erweitert: Soft-Launch-Tagesplan 23.–27.11. (LP 4.2) entfällt als Pflicht; Go/No-Go = Plan M8-03; „Rückkehr am Tag 2“ nur Info. Test 2 bekommt einen **Ausweichtermin** (Fr 27.11. 17–21 Uhr oder So 29.11. 11–18:30), der den 28.11. nur bei Ausfall **ersetzt** | E-024 (3 Tester, 2 Termine); Chapter-8-Risiko | Plan §1, Review R-10/R-29 |
+| E-076 | 2026-09-29 | P-08: Codes, Event-Inhalte und Wochenendzeiten gelten laut GDD 7.2/7.4; LP §4.3/§5 angeglichen; Joker-Codes entfallen; Posting-Vorlage `docs/code_kalender.md` aus `data/codes.csv` (M8-07) | Build kennt nur GDD-Codes | Plan §1, Review R-09 |
+| E-077 | 2026-09-29 | **ersetzt E-064:** WPO-Bob einheitlich **4 cm / 0,8 Hz** (wie `materials_spec.md` §3); Parameternamen exakt laut `materials_spec.md` §3 | Widerspruch Plan/Spec | Plan §5.4, Review R-19 |
+| E-078 | 2026-09-29 | **ersetzt E-073:** Test-Report über `@editable TestReportEnabled` (unabhängig von `DebugMode`): Menü-Knopf „TEST-REPORT“ im Menü-Terminal ab M3, Code `TESTREPORT` zusätzlich ab M5; Test 1 mit `DebugMode=false, TestReportEnabled=true`; Release `TestReportEnabled=false` | Test 1 hat kein Code-Terminal | Plan M0-10/M3-08/M3-11/M8-06, Review R-02 |
+| E-079 | 2026-09-29 | Ersatztitel bleibt **„FUSE THE BRAINROTS!“** (E-040); LP 1.2 „BRAINROT FUSION LAB“ nur noch als CTR-Abbruch-Option | eine Quelle für den Ersatztitel | LP 1.2, Review R-47 |
+| E-080 | 2026-09-29 | Bonus-Arten nur bei B1-Projektion **< 45.000** **und** (Variante ≠ A oder F1 aktiv); sonst Ersatz-Formen: E3 → Bzzkoffro + `MI_FTB_Event_Paket`, E6 → Diskolama + `MI_FTB_Event_Bass`; B9-Grün an Variante gekoppelt (A ≤ 4.500, B/C ≤ 3.500) | B10 wäre mit A rot (2.880); strenger als GDD „< 50 %“ | Plan M0.3/M6-02b/§3, Review R-12/R-13/R-34 |
+| E-081 | 2026-09-29 | `Form`-Codes: 0 normal, 1 Gründer, 2 Frosti, 3 Paket, 4 Funki, 5 Schleimi, 6 Bass, 7 Kosmi, 8 Festi, 9 Sternen (IIT); Packformat 32 Werte | eindeutige Zuordnung Form → MI | Plan §4.2, Review R-13 |
+| E-082 | 2026-09-29 | Event-Token-Umtausch 1:5 beim ersten Join nach Ende der Event-Woche (Do 00:00 UTC, `LastEventWeekSeen < EventWeek`), nicht am Wochenende; Rotation nach W8: `2 + ((Raw − 9) mod 7)`, Raw 1-basiert | Mehrdeutigkeit, Off-by-one | Plan M5-04, Review R-17/R-30 |
+| E-083 | 2026-09-29 | `economy_sim.py` hat echte Overrides (`--set key=wert`, `--params datei.json`), Parameter `pads_max` (Standard 6), `--out`, `--dump-json`, `--show-params`; Referenz-CSV unverändert, Override-Läufe nach `research/sim/`; `econ_params.json` = `--dump-json` statt Abtippen | Balancing-Ablauf ausführbar | `data/economy_sim.py`, Review R-01/R-31 |
+| E-084 | 2026-09-29 | Kontingent-Checkpoints: Block = 1–2 Aufgaben bzw. ≤ 3 h; nach jedem nummerierten Schritt `Laufend:`-Zeile + WIP-Commit; Aufgaben > 2 h geteilt (a/b) | Claude-Pro-Limit | `CLAUDE.md` §2/§2a, Review R-14/R-15 |
+| E-085 | 2026-09-29 | Hype-Zone ist ein **Ring** 2.000–3.000 cm (xy) um (0,0); Boss-Späteinsteiger ≤ 45 s = volle Belohnung | GDD 2.4.4/8 | Plan M3-05a/b, Review R-45/R-46 |
+| E-086 | 2026-09-29 | Claude Code nutzt unter Windows **Git Bash**; PowerShell nur eingebettet (`powershell.exe -NoProfile …`) | Werkzeug von Claude Code | `CLAUDE.md` §0, Review R-04 |
 
 ## E. Ergebnisse ab Bau-Start
 <!-- Claude Code hängt hier an: G0-Ergebnis, Digest-Befunde, Markt-Check, Test-1-Entscheidung usw. -->
