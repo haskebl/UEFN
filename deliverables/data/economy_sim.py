@@ -5,14 +5,32 @@ FUSE THE BRAINROT - Economy-Simulation (nur Python-Standardbibliothek)
 Simuliert einen aktiven Spieler (F2P, keine IIT-Boosts, kein Offline-Einkommen)
 ueber 50 Spielstunden und schreibt Checkpoints nach economy_sim_output.csv.
 
-Aufruf:   python3 economy_sim.py            (Standard, Seed 7)
-          python3 economy_sim.py --runs 20  (Mittelwert/Streuung ueber 20 Seeds)
-          python3 economy_sim.py --params   (Parametertabelle als Markdown)
+Aufruf (Git Bash / Linux / macOS; unter Windows `python` statt `python3`):
+  python3 economy_sim.py                      Referenzlauf Seed 7 -> schreibt data/economy_sim_output.csv
+  python3 economy_sim.py --runs 20            Median/Streuung ueber 20 Seeds (7..26)
+  python3 economy_sim.py --show-params        Parametertabelle als Markdown (nichts wird simuliert)
+  python3 economy_sim.py --set pads_max=5     Parameter ueberschreiben (mehrfach erlaubt)
+  python3 economy_sim.py --set 'pad_costs=[150,3000,60000]' --set rebirth_growth=4.0
+  python3 economy_sim.py --params aenderung.json   Overrides aus JSON-Datei {"key": wert, ...}
+  python3 economy_sim.py --dump-json econ_params.json   effektive Parameter als JSON schreiben
+  python3 economy_sim.py --out pfad.csv       CSV-Ziel explizit setzen
+
+Regeln:
+- Werte von --set werden per json.loads gelesen (Zahlen, Listen, true/false);
+  unbekannte Schluessel oder falscher Typ -> Abbruch mit Fehlermeldung.
+- Reihenfolge: erst --params-Datei, dann --set (spaeteres --set gewinnt).
+- Sobald Overrides aktiv sind, wird die Referenzdatei data/economy_sim_output.csv
+  NIE ueberschrieben; Standardziel ist dann research/sim/sim_<JJJJMMTT_hhmmss>.csv
+  (relativ zum aktuellen Arbeitsverzeichnis). Ohne Overrides bleibt das alte Verhalten.
+- `--params` ohne JSON-Datei wirkt wie --show-params (Rueckwaertskompatibilitaet).
 
 Alle Balancing-Werte stehen im Dict P. Dieselben Werte gehoeren 1:1 in
-Verse (econ_config.verse). Aenderungen immer hier zuerst simulieren.
+Verse (Generator-Marker `econ`, Quelle data/econ_params.json = --dump-json).
+Aenderungen immer hier zuerst simulieren.
 """
 import csv
+import datetime
+import json
 import math
 import os
 import random
@@ -49,6 +67,7 @@ P = {
     "stall_cap": 30,                  # Lager (nicht verdienend)
     # --- Plot ------------------------------------------------------------
     "pads_start": 2,
+    "pads_max": 6,                    # Obergrenze Pads (Fallback F2: 5); braucht pads_max-pads_start Pad-Kosten
     "pad_costs": [150, 3_000, 60_000, 1_200_000],   # Pad 3..6 (bleiben bei Rebirth)
     "totem_base": 500,                # Einkommens-Totem Stufe n kostet 500*1.55^n
     "totem_growth": 1.55,
@@ -98,6 +117,11 @@ P = {
     "tut_wave1_at": 40,               # Tutorial-Welle 1: +50 Muenzen, +3 Kerne, Gratis-Wiesen-Ei
     "tut_wave1_coins": 50, "tut_wave1_kerne": 3,
 }
+
+def pads_max():
+    """Effektive Pad-Obergrenze: pads_max, begrenzt durch die Anzahl definierter Pad-Kosten."""
+    return min(P["pads_max"], P["pads_start"] + len(P["pad_costs"]))
+
 
 HORIZONS_H = [0.25, 0.5, 1, 2, 3, 5, 10, 20, 30, 50]
 
@@ -246,7 +270,7 @@ class Sim:
         base = sum(c.income() for c in pads) * self.rb_mult() * self.idx_mult()
         opts.append((base * P["totem_bonus"] / tcost, tcost, ("totem", None)))
         # Pads
-        if self.pads < 6:
+        if self.pads < pads_max():
             pcost = P["pad_costs"][self.pads - 2]
             spare = sorted(self.creatures, key=lambda c: c.income(), reverse=True)[self.pads:self.pads + 1]
             g = spare[0].income() * rbm if spare else 0
@@ -364,7 +388,7 @@ class Sim:
         cost = P["rebirth_base"] * P["rebirth_growth"] ** n
         if self.coins >= cost and self.best_wave >= P["rebirth_wave_req"] + P["rebirth_wave_step"] * n:
             self.rebirths += 1
-            keep = min(P["rebirth_keep_base"] + self.rebirths, 6)
+            keep = min(P["rebirth_keep_base"] + self.rebirths, pads_max())
             ranked = sorted(self.creatures, key=lambda c: c.power(), reverse=True)
             for c in ranked[keep:]:
                 self.kerne += P["release_kerne"][c.r]
@@ -463,14 +487,94 @@ def params_markdown():
     return "\n".join(rows)
 
 
+def _type_ok(old, new):
+    num = (int, float)
+    if isinstance(old, bool) or isinstance(new, bool):
+        return isinstance(old, bool) and isinstance(new, bool)
+    if isinstance(old, num):
+        return isinstance(new, num)
+    if isinstance(old, (list, tuple)):
+        return isinstance(new, (list, tuple))
+    return isinstance(new, type(old))
+
+
+def apply_overrides(overrides):
+    """Setzt Overrides in P; prueft Schluessel, Typ und Pad-Konsistenz. Gibt Liste 'key=alt->neu' zurueck."""
+    log = []
+    for key, val in overrides:
+        if key not in P:
+            sys.exit(f"FEHLER: unbekannter Parameter '{key}'. Gueltig: {', '.join(P)}")
+        if not _type_ok(P[key], val):
+            sys.exit(f"FEHLER: '{key}' erwartet {type(P[key]).__name__}, bekam {type(val).__name__} ({val!r})")
+        if key == "eggs":
+            val = [tuple(e) for e in val]
+        log.append(f"{key}={P[key]!r}->{val!r}")
+        P[key] = val
+    if P["pads_max"] < P["pads_start"]:
+        sys.exit("FEHLER: pads_max < pads_start")
+    if P["pads_start"] + len(P["pad_costs"]) < P["pads_max"]:
+        sys.exit(f"FEHLER: pads_max={P['pads_max']} braucht {P['pads_max'] - P['pads_start']} Werte in pad_costs, "
+                 f"vorhanden {len(P['pad_costs'])}")
+    return log
+
+
+def parse_args(argv):
+    a = {"runs": 1, "out": None, "dump": None, "show": False, "overrides": []}
+    json_files, sets = [], []
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        nxt = argv[i + 1] if i + 1 < len(argv) else None
+        if arg == "--runs" and nxt:
+            a["runs"] = int(nxt); i += 2
+        elif arg == "--out" and nxt:
+            a["out"] = nxt; i += 2
+        elif arg == "--dump-json" and nxt:
+            a["dump"] = nxt; i += 2
+        elif arg == "--show-params":
+            a["show"] = True; i += 1
+        elif arg == "--params":
+            if nxt and not nxt.startswith("--") and nxt.lower().endswith(".json"):
+                json_files.append(nxt); i += 2
+            else:
+                a["show"] = True; i += 1
+        elif arg == "--set" and nxt:
+            if "=" not in nxt:
+                sys.exit(f"FEHLER: --set erwartet key=wert, bekam '{nxt}'")
+            k, v = nxt.split("=", 1)
+            try:
+                val = json.loads(v)
+            except ValueError:
+                val = v   # reiner Text
+            sets.append((k.strip(), val)); i += 2
+        elif arg in ("-h", "--help"):
+            print(__doc__); sys.exit(0)
+        else:
+            sys.exit(f"FEHLER: unbekanntes Argument '{arg}' (Hilfe: --help)")
+    for jf in json_files:
+        with open(jf, encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            sys.exit(f"FEHLER: {jf} muss ein JSON-Objekt sein")
+        a["overrides"].extend(data.items())
+    a["overrides"].extend(sets)
+    return a
+
+
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    if "--params" in sys.argv:
+    args = parse_args(sys.argv[1:])
+    changes = apply_overrides(args["overrides"])
+    if args["dump"]:
+        with open(args["dump"], "w", encoding="utf-8") as f:
+            json.dump(P, f, indent=1, ensure_ascii=False)
+        print(f"Parameter-JSON geschrieben: {args['dump']}")
+    if args["show"]:
         print(params_markdown())
         return
-    runs = 1
-    if "--runs" in sys.argv:
-        runs = int(sys.argv[sys.argv.index("--runs") + 1])
+    if args["dump"] and not changes and args["out"] is None and args["runs"] == 1 and "--runs" not in sys.argv:
+        return   # reiner Export
+    runs = args["runs"]
     cps = [int(h * 3600) for h in HORIZONS_H]
     all_rows, all_ms = [], []
     for seed in range(7, 7 + runs):
@@ -479,7 +583,17 @@ def main():
         all_rows.append(rows)
         all_ms.append(s.ms)
     rows = all_rows[0]
-    path = os.path.join(here, "economy_sim_output.csv")
+    if args["out"]:
+        path = args["out"]
+    elif changes:
+        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        path = os.path.join("research", "sim", f"sim_{stamp}.csv")
+    else:
+        path = os.path.join(here, "economy_sim_output.csv")
+    ref = os.path.abspath(os.path.join(here, "economy_sim_output.csv"))
+    if changes and os.path.abspath(path) == ref:
+        sys.exit("FEHLER: Mit Overrides darf die Referenzdatei data/economy_sim_output.csv nicht ueberschrieben werden.")
+    os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
         w.writeheader()
@@ -487,6 +601,11 @@ def main():
             r = dict(r)
             r["coins"] = f"{r['coins']:.0f}"
             w.writerow(r)
+    if changes:
+        print("Overrides aktiv:")
+        for c in changes:
+            print(f"  {c}")
+        print()
     print("Checkpoints (Seed 7):")
     hdr = ["h", "Muenzen", "Eink./s", "Brainrots", "Beste", "Rebirths", "Welle", "Index", "Fusionen", "Bosse"]
     print(" | ".join(hdr))
