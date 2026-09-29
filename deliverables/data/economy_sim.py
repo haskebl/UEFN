@@ -29,7 +29,7 @@ P = {
     "level_mult": 1.15,               # Einkommen & Kraft x1.15 pro Level
     "level_cost_factor": 20,          # Levelkosten = income_base[r] * 20 * growth^(L-1)
     "level_cost_growth": 1.21,
-    "level_cap_base": 25,             # Max-Level = 25 + 5 * Rebirths (Deckel 75)
+    "level_cap_base": 25,             # Max-Level = 25 + 5 * Rebirths (Deckel 150)
     "level_cap_per_rebirth": 5,
     "level_cap_max": 150,
     "gen_bonus": 0.08,                # +8 % Einkommen & Kraft pro Fusions-Generation
@@ -39,10 +39,11 @@ P = {
         ("Wiesen-Ei", 20, 3, [80, 18, 2, 0, 0, 0, 0], 0),
         ("Sumpf-Ei", 350, 5, [40, 42, 15, 3, 0, 0, 0], 0),
         ("Wuesten-Ei", 7_500, 8, [0, 45, 40, 13, 2, 0, 0], 0),
-        ("Disko-Ei", 5_000_000, 12, [0, 0, 50, 38, 11, 1, 0], 1),
-        ("Gewitter-Ei", 2_000_000_000, 18, [0, 0, 0, 60, 36, 3.98, 0.02], 3),
-        ("Kosmos-Ei", 2_000_000_000_000, 25, [0, 0, 0, 0, 70, 29.9, 0.1], 6),
-        ("Urknall-Ei", 5_000_000_000_000_000, 30, [0, 0, 0, 0, 50, 49.5, 0.5], 10),
+        ("Disko-Ei", 400_000, 12, [0, 0, 50, 38, 11, 1, 0], 0),
+        ("Gewitter-Ei", 3_000_000_000, 18, [0, 0, 0, 60, 36, 3.99, 0.01], 2),
+        ("Kosmos-Ei", 5_000_000_000_000, 25, [0, 0, 0, 0, 70, 29.95, 0.05], 5),
+        ("Urknall-Ei", 20_000_000_000_000_000, 30, [0, 0, 0, 0, 55, 44.8, 0.2], 9),
+        ("Galaxie-Ei", 1e23, 30, [0, 0, 0, 0, 30, 69.5, 0.5], 14),
     ],
     "brood_slots": 1,                 # F2P; IIT "Goldenes Nest" = 2
     "stall_cap": 30,                  # Lager (nicht verdienend)
@@ -60,11 +61,12 @@ P = {
     "fusion_slots": 1,
     "resonance_chance": 0.20,         # gleiche Seltenheit -> +1 Stufe (Quote sichtbar), max. Mythisch
     "resonance_pity": 5,              # 5. Versuch in Folge garantiert
-    "secret_recipe_rebirth": 6,       # Geheim-Rezepte (Hinweise) ab Rebirth 6
-    "secret_recipe_chance": 0.12,     # Anteil M+M-Fusionen, die ein Rezept treffen
+    "secret_recipe_rebirth": 10,      # Geheim-Rezepte (Hinweise) ab Rebirth 10
+    "secret_recipe_chance": 0.08,     # Anteil M+M-Fusionen, die ein Rezept treffen
     # --- Wellen ----------------------------------------------------------
-    "wave_base": 22,                  # Wellenstaerke W(w) = 22 * 1.12^(w-1)
-    "wave_growth": 1.12,
+    "wave_base": 22,                  # W(w) = 22 * 1.13^(w-1) * (1 + (w-1)/15)
+    "wave_growth": 1.13,
+    "wave_poly": 15,
     "hype_dist": [(1.0, 0.20), (1.25, 0.50), (1.5, 0.30)],   # Verfehlt/Gut/Perfekt
     "wave_cycle_s": 40,               # 25 s Kampf + 15 s Verwaltung
     "wave_first_income_s": 45,        # Erstabschluss: 45 s Einkommen
@@ -81,11 +83,11 @@ P = {
     # --- Freilassen ------------------------------------------------------
     "release_kerne": [1, 1, 2, 3, 5, 8, 12],
     # --- Rebirth ---------------------------------------------------------
-    "rebirth_base": 250_000_000,      # Kosten n-ter Rebirth = base * growth^n
-    "rebirth_growth": 6.0,
+    "rebirth_base": 300_000_000,      # Kosten n-ter Rebirth = base * growth^n
+    "rebirth_growth": 4.25,
     "rebirth_wave_req": 20,           # + Welle >= 20 + 10n
     "rebirth_wave_step": 10,
-    "rebirth_mult": 1.6,              # x1.6 Einkommen & Kraft pro Rebirth (multiplikativ)
+    "rebirth_mult": 1.45,              # x1.45 Einkommen & Kraft pro Rebirth (multiplikativ)
     "rebirth_keep_base": 1,           # behaelt min(1+n, 6) beste Brainrots
     # --- Index -----------------------------------------------------------
     "index_bonus_per_entry": 0.004,   # +0,4 % Einkommen pro Index-Eintrag
@@ -102,11 +104,14 @@ HORIZONS_H = [0.25, 0.5, 1, 2, 3, 5, 10, 20, 30, 50]
 
 def fmt(n):
     """Zahlenformat wie im HUD: 3 signifikante Stellen + Suffix."""
-    sfx = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"]
+    sfx = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc",
+           "Ud", "Dd", "Td", "Qad", "Qid", "Sxd", "Spd", "Ocd", "Nod", "Vg"]
     if n < 1000:
         return str(int(n))
     e = min(int(math.log10(n) // 3), len(sfx) - 1)
-    v = n / 10 ** (3 * e)
+    v = float(f"{n / 10 ** (3 * e):.3g}")
+    if v >= 1000 and e < len(sfx) - 1:
+        e, v = e + 1, v / 1000
     s = f"{v:.2f}" if v < 10 else (f"{v:.1f}" if v < 100 else f"{v:.0f}")
     return s + sfx[e]
 
@@ -178,7 +183,7 @@ class Sim:
         return sum(top) * self.rb_mult()
 
     def wave_req(self, w):
-        return P["wave_base"] * P["wave_growth"] ** (w - 1)
+        return P["wave_base"] * P["wave_growth"] ** (w - 1) * (1 + (w - 1) / P["wave_poly"])
 
     def unlocked_eggs(self):
         return [i for i, e in enumerate(P["eggs"]) if e[4] <= self.rebirths]
