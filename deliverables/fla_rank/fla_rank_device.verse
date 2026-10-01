@@ -503,7 +503,9 @@ fla_rank_device := class(creative_device):
     # werden mit "..." gekuerzt statt aus der Zeile zu laufen.
     RankUIScale():float = 0.92
     RankArtContentScale():float = 0.92
-    ArtScale():float = RankUIScale() * RankArtContentScale()
+    # Gesamtgroesse des Leaderboards (Panel + Texte + Balken gemeinsam): 0.85 = 15 % kleiner
+    RankPanelSize():float = 0.85
+    ArtScale():float = RankUIScale() * RankArtContentScale() * RankPanelSize()
     Art(Value:float):float = Value * ArtScale()
     ScaleRank(Value:float):float = Value * RankUIScale()
 
@@ -511,9 +513,9 @@ fla_rank_device := class(creative_device):
     ArtWidth():float = 480.0
     ArtHeight():float = 292.0
 
-    # Horizontal: rechte Panelkante bei 96.2 % der Bildschirmbreite -> immer ca. 2 cm Abstand zum
-    # rechten Rand (3.8 % der Breite, auf 24"-27"-Monitoren ~2-2.3 cm), unabhaengig von der HUD-Groesse.
-    PanelAnchorX():float = 0.962
+    # Horizontal: rechte Panelkante bei 97.7 % der Bildschirmbreite -> immer ca. 1.2 cm Abstand zum
+    # rechten Rand (2.3 % der Breite, auf 24"-27"-Monitoren ~1.2-1.4 cm), unabhaengig von der HUD-Groesse.
+    PanelAnchorX():float = 0.977
     PanelLeftFromRight():float = 0.0 - Art(ArtWidth())
 
     # Vertikal: Panel-Mitte exakt mittig zwischen PROPS REMAINING und TEAM HUNTERS / TEAM PROPS.
