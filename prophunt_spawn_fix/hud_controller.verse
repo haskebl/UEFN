@@ -4867,7 +4867,7 @@ hud_controller := class(creative_device):
                 Padding :=
                     margin{
                         Left := ScaleHUD(10.0)
-                        Top := ScaleHUD(83.0)
+                        Top := ScaleHUD(87.68)
                         Right := 0.0
                         Bottom := 0.0
                     }
@@ -4907,7 +4907,7 @@ hud_controller := class(creative_device):
                 Padding :=
                     margin{
                         Left := ScaleHUD(68.0)
-                        Top := ScaleHUD(164.0)
+                        Top := ScaleHUD(159.0)
                         Right := 0.0
                         Bottom := 0.0
                     }
