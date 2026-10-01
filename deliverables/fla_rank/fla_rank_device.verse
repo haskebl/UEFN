@@ -503,8 +503,8 @@ fla_rank_device := class(creative_device):
     # werden mit "..." gekuerzt statt aus der Zeile zu laufen.
     RankUIScale():float = 0.92
     RankArtContentScale():float = 0.92
-    # Gesamtgroesse des Leaderboards (Panel + Texte + Balken gemeinsam): 0.85 = 15 % kleiner
-    RankPanelSize():float = 0.85
+    # Gesamtgroesse des Leaderboards (Panel + Texte + Balken gemeinsam): 0.8925 = 0.85 x 1.05
+    RankPanelSize():float = 0.8925
     ArtScale():float = RankUIScale() * RankArtContentScale() * RankPanelSize()
     Art(Value:float):float = Value * ArtScale()
     ScaleRank(Value:float):float = Value * RankUIScale()
@@ -591,8 +591,8 @@ fla_rank_device := class(creative_device):
             # Markierung der eigenen Zeile: rechts neben dem Badge bis zum Spaltenende
             Back := color_block{DefaultColor := Cyan, DefaultOpacity := 0.0}
             Root.AddWidget(ArtSlot(Back, X + 31.0, Y, 192.0, RowHeight(), 2))
-            # Top 3 etwas groesser
-            NameSize := if (I < 3) then 12.5 else 12.0
+            # Top 3 etwas groesser (bleibt durch Zellbreite + "..." immer im Feld, vertikal zentriert)
+            NameSize := if (RowIdx < 3, Col < 0.5) then 13.5 else 12.0
             # Platz-Nummer mittig im gezeichneten Badge
             PosT := MakeText(Art(11.0), NamedColors.White, text_justification.Center, NamedColors.Black, 0.9)
             Root.AddWidget(TextCell(PosT, X + 2.0, Y, 28.0, RowHeight(), 3))
