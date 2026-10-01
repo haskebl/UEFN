@@ -494,8 +494,8 @@ fla_rank_device := class(creative_device):
     #
     # Alle Positionen unten sind GRAFIK-KOORDINATEN (Generator-Raster 480 x 292) und wurden am
     # Ingame-Screenshot nachgemessen (Rang-Chip, Fortschrittsschiene, Zeile "NEXT", 2 x 8 Zeilen).
-    # Die Grafik zeichnet ihren Inhalt mit 92 % der Texturflaeche -> Art() rechnet Grafik-Koordinaten
-    # in UI-Einheiten um. Panel, Texte, Balken und Schriftgroessen laufen alle ueber denselben Faktor,
+    # Art() rechnet Grafik-Koordinaten in UI-Einheiten um (0.92 x 0.92 = bisherige, bewaehrte Panelgroesse).
+    # Panel-Grafik, Texte, Balken und Schriftgroessen laufen ALLE ueber denselben Faktor Art(),
     # deshalb skaliert alles gemeinsam mit jeder HUD-Groesse und nichts verrutscht gegeneinander.
     #
     # Texte sitzen in festen Zellen (overlay) und werden darin VERTIKAL ZENTRIERT -> Schrifthoehe
@@ -507,15 +507,14 @@ fla_rank_device := class(creative_device):
     Art(Value:float):float = Value * ArtScale()
     ScaleRank(Value:float):float = Value * RankUIScale()
 
-    # Texturflaeche (unveraendert) und sichtbarer Inhalt in Grafik-Koordinaten
-    PanelWidth():float = ScaleRank(480.0)
-    PanelHeight():float = ScaleRank(292.0)
+    # Groesse der Panel-Grafik in Grafik-Koordinaten (wird komplett mit Art() skaliert)
     ArtWidth():float = 480.0
     ArtHeight():float = 292.0
 
-    # Horizontal: rechter Rand des Panels mit festem Abstand zum Bildschirmrand (wie bisher)
-    PanelRightMargin():float = 25.0
-    PanelLeftFromRight():float = 0.0 - PanelRightMargin() - Art(ArtWidth())
+    # Horizontal: rechte Panelkante bei 96.2 % der Bildschirmbreite -> immer ca. 2 cm Abstand zum
+    # rechten Rand (3.8 % der Breite, auf 24"-27"-Monitoren ~2-2.3 cm), unabhaengig von der HUD-Groesse.
+    PanelAnchorX():float = 0.962
+    PanelLeftFromRight():float = 0.0 - Art(ArtWidth())
 
     # Vertikal: Panel-Mitte exakt mittig zwischen PROPS REMAINING und TEAM HUNTERS / TEAM PROPS.
     #  - PROPS REMAINING (hud_controller): oben angeheftet, sichtbare Unterkante ~207 Einheiten unter dem Rand
@@ -527,7 +526,7 @@ fla_rank_device := class(creative_device):
     PanelTop():float = PanelCenterOffset() - Art(ArtHeight() * 0.5)
 
     PanelAnchors():anchors =
-        anchors{Minimum := vector2{X := 1.0, Y := PanelAnchorY()}, Maximum := vector2{X := 1.0, Y := PanelAnchorY()}}
+        anchors{Minimum := vector2{X := PanelAnchorX(), Y := PanelAnchorY()}, Maximum := vector2{X := PanelAnchorX(), Y := PanelAnchorY()}}
 
     # Grafik-Masse (gemessen)
     BarX():float = 16.0
@@ -539,6 +538,8 @@ fla_rank_device := class(creative_device):
     RowHeight():float = 20.5
     ColumnX():float = 14.0
     ColumnPitch():float = 229.0
+    # Optischer Ausgleich: Schrift-Zeilenbox hat unten Platz fuer Unterlaengen -> Text minimal tiefer setzen
+    TextOpticalNudge():float = 1.0
 
     # Element an Grafik-Koordinate X/Y mit Groesse SizeX/SizeY (alles in Grafik-Koordinaten)
     ArtSlot(W:widget, X:float, Y:float, SizeX:float, SizeY:float, Z:type{_X:int where 0 <= _X, _X <= 2147483647}):canvas_slot =
@@ -548,7 +549,7 @@ fla_rank_device := class(creative_device):
     TextCell(Label:text_block, X:float, Y:float, SizeX:float, SizeY:float, Z:type{_X:int where 0 <= _X, _X <= 2147483647}):canvas_slot =
         Cell := overlay{}
         Cell.AddWidget(overlay_slot{Widget := Label, HorizontalAlignment := horizontal_alignment.Fill, VerticalAlignment := vertical_alignment.Center})
-        ArtSlot(Cell, X, Y, SizeX, SizeY, Z)
+        ArtSlot(Cell, X, Y + TextOpticalNudge(), SizeX, SizeY, Z)
 
     # Textstil wie im HUD: weiss mit Schatten (Kopfwerte mit blauem Schimmer wie Rundentimer)
     MakeText(Size:float, TextColor:color, Just:text_justification, ShadowColor:color, ShadowOpacity:type{_X:float where 0.0 <= _X, _X <= 1.0}):text_block =
@@ -559,8 +560,8 @@ fla_rank_device := class(creative_device):
         Gold := MakeColorFromSRGB(1.0, 0.82, 0.25)
         Root := canvas{}
         # Hintergrund: gezeichnetes Panel im HUD-Stil (Titel-Badge, Rahmen, Rang-Chip, Balkenschiene, Zeilen)
-        Panel := texture_block{DefaultImage := FLARankUI.T_Rank_Panel, DefaultDesiredSize := vector2{X := PanelWidth(), Y := PanelHeight()}}
-        Root.AddWidget(canvas_slot{Widget := Panel, Anchors := PanelAnchors(), Offsets := margin{Left := PanelLeftFromRight(), Top := PanelTop(), Right := PanelWidth(), Bottom := PanelHeight()}, Alignment := vector2{X := 0.0, Y := 0.0}, SizeToContent := false, ZOrder := 0})
+        Panel := texture_block{DefaultImage := FLARankUI.T_Rank_Panel, DefaultDesiredSize := vector2{X := Art(ArtWidth()), Y := Art(ArtHeight())}}
+        Root.AddWidget(ArtSlot(Panel, 0.0, 0.0, ArtWidth(), ArtHeight(), 0))
         # Rang-Chip oben rechts (Grafik: X 222-466, Y 29-62): Rangname links, RP rechts, beide mittig in der Hoehe
         Tier := MakeText(Art(15.0), NamedColors.White, text_justification.Left, NamedColors.DodgerBlue, 0.45)
         Root.AddWidget(TextCell(Tier, 238.0, 30.0, 118.0, 31.0, 2))
