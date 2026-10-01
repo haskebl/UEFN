@@ -409,7 +409,7 @@ hud_controller := class(creative_device):
 
 
     # Teams sind fest, sobald die Props freigegeben wurden oder der Rundentimer laeuft
-    AreTeamsLocked():logic =
+    AreTeamsLocked()<transacts>:logic =
         if (RoundTimerStartedThisRound = true):
             return true
 

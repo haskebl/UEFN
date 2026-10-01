@@ -139,7 +139,8 @@ fla_spawn_guard_device := class(creative_device):
             if (Release <> ReleaseCounter and Team = 1):
                 break
             var Done:logic = false
-            if (TargetPos := PlaceNow(P, State, Team)?):
+            PlaceResult := PlaceNow(P, State, Team)
+            if (TargetPos := PlaceResult?):
                 Sleep(0.25)
                 if (State.Again = false, IsNear[P, TargetPos]):
                     set Done = true
@@ -204,10 +205,12 @@ fla_spawn_guard_device := class(creative_device):
             Slot := AcquireSlot(P, State, Team, Pads.Length)
             if (OwnPad := Pads[Slot]):
                 for (Ring := 0..4):
-                    if (Pos := TryTeleport(Char, OwnPad, Ring)?):
+                    RingResult := TryTeleport(Char, OwnPad, Ring)
+                    if (Pos := RingResult?):
                         return option{Pos}
             for (Pad : Pads):
-                if (Pos := TryTeleport(Char, Pad, 0)?):
+                PadResult := TryTeleport(Char, Pad, 0)
+                if (Pos := PadResult?):
                     return option{Pos}
         false
 
