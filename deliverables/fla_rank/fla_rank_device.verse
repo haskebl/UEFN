@@ -591,8 +591,8 @@ fla_rank_device := class(creative_device):
             # Markierung der eigenen Zeile: rechts neben dem Badge bis zum Spaltenende
             Back := color_block{DefaultColor := Cyan, DefaultOpacity := 0.0}
             Root.AddWidget(ArtSlot(Back, X + 31.0, Y, 192.0, RowHeight(), 2))
-            # Top 3 etwas groesser (bleibt durch Zellbreite + "..." immer im Feld, vertikal zentriert)
-            NameSize := if (I < 3) then 13.5 else 12.0
+            # Namen: Top 3 etwas groesser (13.5 / 12.0 x 1.02); bleibt durch Zellbreite + "..." immer im Feld, vertikal zentriert
+            NameSize := if (I < 3) then 13.77 else 12.24
             # Platz-Nummer mittig im gezeichneten Badge
             PosT := MakeText(Art(11.0), NamedColors.White, text_justification.Center, NamedColors.Black, 0.9)
             Root.AddWidget(TextCell(PosT, X + 2.0, Y, 28.0, RowHeight(), 3))
