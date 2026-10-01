@@ -3907,7 +3907,7 @@ hud_controller := class(creative_device):
                         WidgetState.StartupText,
                         NamedColors.White,
                         NamedColors.LightSkyBlue,
-                        53.0
+                        50.0
                     )
 
                     WidgetState.StartupText.SetShadowOpacity(
@@ -3940,7 +3940,7 @@ hud_controller := class(creative_device):
                             WidgetState.StartupText,
                             NamedColors.White,
                             NamedColors.LightSkyBlue,
-                            53.0
+                            50.0
                         )
 
                         WidgetState.StartupText.SetShadowOpacity(
@@ -4827,7 +4827,7 @@ hud_controller := class(creative_device):
                 Padding :=
                     margin{
                         Left := ScaleHUD(10.0)
-                        Top := ScaleHUD(79.0)
+                        Top := ScaleHUD(83.0)
                         Right := 0.0
                         Bottom := 0.0
                     }
@@ -4867,7 +4867,7 @@ hud_controller := class(creative_device):
                 Padding :=
                     margin{
                         Left := ScaleHUD(68.0)
-                        Top := ScaleHUD(168.0)
+                        Top := ScaleHUD(164.0)
                         Right := 0.0
                         Bottom := 0.0
                     }
