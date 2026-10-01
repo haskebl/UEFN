@@ -503,8 +503,8 @@ fla_rank_device := class(creative_device):
     # werden mit "..." gekuerzt statt aus der Zeile zu laufen.
     RankUIScale():float = 0.92
     RankArtContentScale():float = 0.92
-    # Gesamtgroesse des Leaderboards (Panel + Texte + Balken gemeinsam): 0.8925 = 0.85 x 1.05
-    RankPanelSize():float = 0.8925
+    # Gesamtgroesse des Leaderboards (Panel + Texte + Balken gemeinsam): 0.9639 = 0.85 x 1.05 x 1.08
+    RankPanelSize():float = 0.9639
     ArtScale():float = RankUIScale() * RankArtContentScale() * RankPanelSize()
     Art(Value:float):float = Value * ArtScale()
     ScaleRank(Value:float):float = Value * RankUIScale()
