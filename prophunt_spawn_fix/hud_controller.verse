@@ -713,6 +713,16 @@ hud_controller := class(creative_device):
         if (WinRecordedThisRound = true):
             return
 
+        # Nur ein echter Prop (Team 2) wird zum Hunter. Ein Hunter wird hier NIE angefasst.
+        WasProp :=
+            IsPlayerInIslandTeam2(EliminatedPlayer)
+
+        if (WasProp = false):
+            Print(
+                "HUD: Eliminierung ignoriert - Spieler ist kein Prop"
+            )
+            return
+
         RebuildCurrentTeamState()
         RefreshCurrentDisplayedRoleState()
 
@@ -739,9 +749,13 @@ hud_controller := class(creative_device):
                     "Eliminierter Prop -> Team 1 / Hunter"
                 )
 
-        Team1Settings.RespawnAtPlayerSpawner(
-            EliminatedPlayer
-        )
+        # Kein sofortiges RespawnAtPlayerSpawner mehr (hat den Hunter, der den Prop gefunden hat,
+        # mit an die Hunter-Spawns teleportiert). Der eliminierte Prop respawnt normal im Hunter-Team,
+        # fla_spawn_guard setzt NUR ihn auf eine Hunter-Plattform.
+        # Fallback, falls auf der Insel kein automatischer Respawn aktiv ist:
+        spawn {
+            EnsureConvertedPropRespawned(EliminatedPlayer)
+        }
 
         RebuildCurrentTeamState()
         RefreshCurrentDisplayedRoleState()
@@ -756,6 +770,32 @@ hud_controller := class(creative_device):
         )
 
         UpdateAllHUD()
+
+
+    # Wartet auf den normalen Respawn. Nur wenn der umgewandelte Prop danach immer noch
+    # keinen aktiven Charakter hat, wird gezielt NUR er am Hunter-Spawner respawnt.
+    EnsureConvertedPropRespawned(
+        Player:player
+    )<suspends>:void =
+        Sleep(4.0)
+
+        if (not Player.IsActive[]):
+            return
+
+        if (Character := Player.GetFortCharacter[], Character.IsActive[]):
+            return
+
+        NowHunter :=
+            IsPlayerInIslandTeam1(Player)
+
+        if (NowHunter = true):
+            Print(
+                "HUD: Fallback-Respawn fuer umgewandelten Prop"
+            )
+
+            Team1Settings.RespawnAtPlayerSpawner(
+                Player
+            )
 
 
     AssignLateJoiningPlayerToHunter(

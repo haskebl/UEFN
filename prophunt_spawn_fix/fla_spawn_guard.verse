@@ -105,19 +105,20 @@ fla_spawn_guard_device := class(creative_device):
                 # Spawn erkannt (Join, Respawn, Rundenstart, Luft-Spawn)
                 set State.WasActive = true
                 set State.LastTeam = Team
-                RequestPlacement(P, State)
+                RequestPlacement(P, State, "Spawn")
             else if (Team <> State.LastTeam):
                 # Teamwechsel: vor der Freigabe immer, danach nur wenn der Spieler Hunter geworden ist
                 set State.LastTeam = Team
                 if (PropsReleased = false or Team = 0):
-                    RequestPlacement(P, State)
+                    RequestPlacement(P, State, "Teamwechsel")
             else if (PropsReleased = false, SkyRescueEnabled?, HasPads?):
                 if (Char.GetTransform().Translation.Z > HighestPadZ + SkyRescueHeight):
-                    RequestPlacement(P, State)
+                    RequestPlacement(P, State, "Luft-Rettung")
         else:
             set State.WasActive = false
 
-    RequestPlacement(P:player, State:fla_spawn_guard_state):void =
+    RequestPlacement(P:player, State:fla_spawn_guard_state, Reason:string):void =
+        Print("SpawnGuard: Spieler wird auf Plattform gesetzt - Grund: {Reason}")
         if (State.Busy?):
             set State.Again = true
             return
